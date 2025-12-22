@@ -102,8 +102,8 @@ public class DebugPropertyScreen extends Screen {
             // TODO sorting
 
             for (DebugProperty<?> debugProperty : DebugProperty.PROPERTIES) {
-                if (debugProperty.name().contains(string)) {
-                    if (debugProperty.type() == Boolean.class){
+                if (debugProperty.name.contains(string)) {
+                    if (debugProperty.type == Boolean.class){
                         this.addEntry(new BooleanPropertyEntry((DebugProperty<Boolean>) debugProperty));
                     }
                 }
@@ -143,7 +143,7 @@ public class DebugPropertyScreen extends Screen {
         public void renderContent(GuiGraphics guiGraphics, int i, int j, boolean bl, float f) {
             int k = this.getContentX();
             int l = this.getContentY();
-            guiGraphics.drawString(DebugPropertyScreen.this.minecraft.font, this.property.name(), k, l + 5, -1);
+            guiGraphics.drawString(DebugPropertyScreen.this.minecraft.font, this.property.name, k, l + 5, -1);
         }
     }
 
@@ -156,8 +156,8 @@ public class DebugPropertyScreen extends Screen {
             Component message = Component.literal("");
             this.checkbox = Checkbox.builder(message, DebugPropertyScreen.this.font)
                     .maxWidth(60)
-                    .selected(property.getter().get())
-                    .onValueChange((cb, v) -> property.setter().accept(v))
+                    .selected(property.get())
+                    .onValueChange((cb, v) -> property.set(v))
                     .build();
             this.children.add(this.checkbox);
             this.refreshEntry();
@@ -173,7 +173,7 @@ public class DebugPropertyScreen extends Screen {
         }
 
         public void refreshEntry() {
-            boolean value = this.property.getter().get();
+            boolean value = this.property.get();
             if (this.checkbox.selected() != value){
                 this.checkbox.onPress(null);
             }
