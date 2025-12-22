@@ -6,5 +6,6 @@ public class DebugPropertiesPlusClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+
     }
 }

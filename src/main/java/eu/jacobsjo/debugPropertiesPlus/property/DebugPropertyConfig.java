@@ -1,4 +1,4 @@
-package eu.jacobsjo.debugPropertiesPlus;
+package eu.jacobsjo.debugPropertiesPlus.property;
 
 public record DebugPropertyConfig (
         boolean per_world,
