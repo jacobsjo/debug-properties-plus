@@ -4,6 +4,7 @@
   "package": "eu.jacobsjo.debugPropertiesPlus.client.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "CreateWorldScreenMoreTabMixin",
     "KeyboardHandlerMixin"
   ],
   "injectors": {

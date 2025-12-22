@@ -31,10 +31,12 @@ public class DebugPropertyScreen extends Screen {
     private @Nullable EditBox searchBox;
 
     private final boolean perWorld;
+    @Nullable private final Runnable exitCallback;
 
-    public DebugPropertyScreen(final boolean perWorld) {
+    public DebugPropertyScreen(final boolean perWorld, @Nullable Runnable exitCallback) {
         super(TITLE);
         this.perWorld = perWorld;
+        this.exitCallback = exitCallback;
     }
 
     @Override
@@ -79,6 +81,15 @@ public class DebugPropertyScreen extends Screen {
         this.layout.arrangeElements();
         if (this.propertyList != null) {
             this.propertyList.updateSize(this.width, this.layout);
+        }
+    }
+
+    @Override
+    public void onClose() {
+        if (this.exitCallback != null){
+            this.exitCallback.run();
+        } else {
+            this.minecraft.setScreen(null);
         }
     }
 

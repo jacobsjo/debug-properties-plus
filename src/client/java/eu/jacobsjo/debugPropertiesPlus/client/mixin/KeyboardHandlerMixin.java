@@ -28,7 +28,7 @@ public class KeyboardHandlerMixin {
                     this.minecraft.screen.onClose();
                 }
 
-                this.minecraft.setScreen(new DebugPropertyScreen(false));
+                this.minecraft.setScreen(new DebugPropertyScreen(false, null));
             }
 
             cir.setReturnValue(true);
