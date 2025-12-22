@@ -14,7 +14,7 @@ public record DebugProperty<T>(
         Supplier<T> getter,
         Consumer<T> setter
 ) {
-    public static final List<DebugProperty<?>> PROPERTIES = Arrays.asList(
+    public static final List<DebugProperty<?>> PROPERTIES = Arrays.<DebugProperty<?>>asList(
         new DebugProperty<>("OPEN_INCOMPATIBLE_WORLDS", DebugPropertyConfig.CLIENT, () -> SharedConstants.DEBUG_OPEN_INCOMPATIBLE_WORLDS,v -> SharedConstants.DEBUG_OPEN_INCOMPATIBLE_WORLDS = v),
         new DebugProperty<>("ALLOW_LOW_SIM_DISTANCE", DebugPropertyConfig.CLIENT, () -> SharedConstants.DEBUG_ALLOW_LOW_SIM_DISTANCE,v -> SharedConstants.DEBUG_ALLOW_LOW_SIM_DISTANCE = v),
         new DebugProperty<>("HOTKEYS", DebugPropertyConfig.CLIENT, () -> SharedConstants.DEBUG_HOTKEYS,v -> SharedConstants.DEBUG_HOTKEYS = v),
