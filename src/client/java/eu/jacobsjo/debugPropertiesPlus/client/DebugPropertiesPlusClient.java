@@ -11,7 +11,7 @@ public class DebugPropertiesPlusClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         DebugProperty.onChange(debugProperty -> {
-            if (debugProperty.config.is_renderer()){
+            if (debugProperty.config.updateDebugRenderer()){
                 minecraft.debugEntries.rebuildCurrentList();
             }
         });

@@ -1,15 +1,59 @@
 package eu.jacobsjo.debugPropertiesPlus.property;
 
 public record DebugPropertyConfig (
-        boolean per_world,
-        boolean server,
-        boolean singleplayer_only,
-        boolean require_op,
-        boolean is_renderer
+        boolean perWorld,
+        boolean onDedicatedServer,
+        boolean notOnMultiplayer,
+        boolean requiresOp,
+        boolean updateDebugRenderer,
+        boolean requiresReload
 ) {
-    public static final DebugPropertyConfig CLIENT = new DebugPropertyConfig(false, false, false, false, false);
-    public static final DebugPropertyConfig RENDERER = new DebugPropertyConfig(false, false, false, true, true);
-    public static final DebugPropertyConfig SINGLEPLAYER = new DebugPropertyConfig(false, false, true, false, false);
-    public static final DebugPropertyConfig SERVER_GLOBAL = new DebugPropertyConfig(false, true, false, false, false);
-    public static final DebugPropertyConfig SERVER = new DebugPropertyConfig(true, false, false, false, false);
+
+    private DebugPropertyConfig(Builder builder){
+        this(builder.perWorld, builder.onDedicatedServer, builder.notOnMultipleyer, builder.requiresOP, builder.updateDebugRenderer, builder.requiresReload);
+    }
+
+    public static class Builder{
+        private boolean perWorld = false;
+        private boolean onDedicatedServer = false;
+        private boolean notOnMultipleyer = false;
+        private boolean requiresOP = false;
+        private boolean updateDebugRenderer = false;
+        private boolean requiresReload = false;
+
+        public Builder perWorld(){
+            this.perWorld = true;
+            return this;
+        }
+
+        public Builder onDedicatedServer(){
+            this.onDedicatedServer = true;
+            return this;
+        }
+
+        public Builder notOnMultipleyer(){
+            this.notOnMultipleyer = true;
+            return this;
+        }
+
+        public Builder requiresOp(){
+            this.requiresOP = true;
+            return this;
+        }
+
+        public Builder updateDebugRenderer(){
+            this.updateDebugRenderer = true;
+            return this;
+        }
+
+        public Builder requiresReload(){
+            this.requiresReload = true;
+            return this;
+        }
+
+        public DebugPropertyConfig build(){
+            return new DebugPropertyConfig(this);
+        }
+
+    }
 }

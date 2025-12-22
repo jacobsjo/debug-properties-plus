@@ -30,8 +30,11 @@ public class DebugPropertyScreen extends Screen {
     private DebugPropertyScreen.@Nullable PropertyList propertyList;
     private @Nullable EditBox searchBox;
 
-    public DebugPropertyScreen() {
+    private final boolean perWorld;
+
+    public DebugPropertyScreen(final boolean perWorld) {
         super(TITLE);
+        this.perWorld = perWorld;
     }
 
     @Override
@@ -99,10 +102,8 @@ public class DebugPropertyScreen extends Screen {
         public void updateSearch(String string) {
             this.clearEntries();
 
-            // TODO sorting
-
             for (DebugProperty<?> debugProperty : DebugProperty.PROPERTIES) {
-                if (debugProperty.name.contains(string)) {
+                if (debugProperty.config.perWorld() == DebugPropertyScreen.this.perWorld && debugProperty.name.contains(string)) {
                     if (debugProperty.type == Boolean.class){
                         this.addEntry(new BooleanPropertyEntry((DebugProperty<Boolean>) debugProperty));
                     }
