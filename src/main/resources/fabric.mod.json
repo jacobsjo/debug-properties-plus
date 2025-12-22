@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "debug-properties-plus",
+  "version": "${version}",
+  "name": "Debug Properties Plus",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/debug-properties-plus/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "eu.jacobsjo.debugPropertiesPlus.client.DebugPropertiesPlusClient"
+    ],
+    "main": [
+      "eu.jacobsjo.debugPropertiesPlus.DebugPropertiesPlus"
+    ]
+  },
+  "mixins": [
+    "debug-properties-plus.mixins.json",
+    {
+      "config": "debug-properties-plus.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "accessWidener": "debug-properties-plus.classtweaker",
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

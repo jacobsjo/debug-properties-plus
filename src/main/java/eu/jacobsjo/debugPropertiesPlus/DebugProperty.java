@@ -1,0 +1,91 @@
+package eu.jacobsjo.debugPropertiesPlus;
+
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.SharedConstants;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+
+public record DebugProperty<T>(
+        String name,
+        DebugPropertyConfig config,
+        Consumer<T> setter
+) {
+    public static final List<DebugProperty<?>> PROPERTIES = Arrays.asList(
+        new DebugProperty<Boolean>("OPEN_INCOMPATIBLE_WORLDS", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_OPEN_INCOMPATIBLE_WORLDS = v),
+        new DebugProperty<Boolean>("ALLOW_LOW_SIM_DISTANCE", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_ALLOW_LOW_SIM_DISTANCE = v),
+        new DebugProperty<Boolean>("HOTKEYS", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_HOTKEYS = v),
+        new DebugProperty<Boolean>("UI_NARRATION", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_UI_NARRATION = v),
+        new DebugProperty<Boolean>("SHUFFLE_UI_RENDERING_ORDER", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_SHUFFLE_UI_RENDERING_ORDER = v),
+        new DebugProperty<Boolean>("SHUFFLE_MODELS", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_SHUFFLE_MODELS = v),
+        new DebugProperty<Boolean>("RENDER_UI_LAYERING_RECTANGLES", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_RENDER_UI_LAYERING_RECTANGLES = v),
+        new DebugProperty<Boolean>("PATHFINDING", DebugPropertyConfig.CLIENT_OP, v -> SharedConstants.DEBUG_PATHFINDING = v),
+        new DebugProperty<Boolean>("SHOW_LOCAL_SERVER_ENTITY_HIT_BOXES", DebugPropertyConfig.SINGLEPLAYER, v -> SharedConstants.DEBUG_SHOW_LOCAL_SERVER_ENTITY_HIT_BOXES = v),
+        new DebugProperty<Boolean>("SHAPES", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_SHAPES = v),
+        new DebugProperty<Boolean>("NEIGHBORSUPDATE", DebugPropertyConfig.CLIENT_OP, v -> SharedConstants.DEBUG_NEIGHBORSUPDATE = v),
+        new DebugProperty<Boolean>("EXPERIMENTAL_REDSTONEWIRE_UPDATE_ORDER", DebugPropertyConfig.CLIENT_OP, v -> SharedConstants.DEBUG_EXPERIMENTAL_REDSTONEWIRE_UPDATE_ORDER = v),
+        new DebugProperty<Boolean>("STRUCTURES", DebugPropertyConfig.CLIENT_OP, v -> SharedConstants.DEBUG_STRUCTURES = v),
+        new DebugProperty<Boolean>("GAME_EVENT_LISTENERS", DebugPropertyConfig.CLIENT_OP, v -> SharedConstants.DEBUG_GAME_EVENT_LISTENERS = v),
+        new DebugProperty<Boolean>("DUMP_TEXTURE_ATLAS", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_DUMP_TEXTURE_ATLAS = v),
+        new DebugProperty<Boolean>("DUMP_INTERPOLATED_TEXTURE_FRAMES", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_DUMP_INTERPOLATED_TEXTURE_FRAMES = v),
+        new DebugProperty<Boolean>("STRUCTURE_EDIT_MODE", DebugPropertyConfig.SERVER_GLOBAL, v -> SharedConstants.DEBUG_STRUCTURE_EDIT_MODE = v),
+        new DebugProperty<Boolean>("SAVE_STRUCTURES_AS_SNBT", DebugPropertyConfig.SERVER_GLOBAL, v -> SharedConstants.DEBUG_SAVE_STRUCTURES_AS_SNBT = v),
+        new DebugProperty<Boolean>("SYNCHRONOUS_GL_LOGS", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_SYNCHRONOUS_GL_LOGS = v),
+        new DebugProperty<Boolean>("VERBOSE_SERVER_EVENTS", DebugPropertyConfig.SERVER_GLOBAL, v -> SharedConstants.DEBUG_VERBOSE_SERVER_EVENTS = v),
+        new DebugProperty<Boolean>("NAMED_RUNNABLES", DebugPropertyConfig.SERVER_GLOBAL, v -> SharedConstants.DEBUG_NAMED_RUNNABLES = v),
+        new DebugProperty<Boolean>("GOAL_SELECTOR", DebugPropertyConfig.CLIENT_OP, v -> SharedConstants.DEBUG_GOAL_SELECTOR = v),
+        new DebugProperty<Boolean>("VILLAGE_SECTIONS", DebugPropertyConfig.CLIENT_OP, v -> SharedConstants.DEBUG_VILLAGE_SECTIONS = v),
+        new DebugProperty<Boolean>("BRAIN", DebugPropertyConfig.CLIENT_OP, v -> SharedConstants.DEBUG_BRAIN = v),
+        new DebugProperty<Boolean>("POI", DebugPropertyConfig.CLIENT_OP, v -> SharedConstants.DEBUG_POI = v),
+        new DebugProperty<Boolean>("BEES", DebugPropertyConfig.CLIENT_OP, v -> SharedConstants.DEBUG_BEES = v),
+        new DebugProperty<Boolean>("RAIDS", DebugPropertyConfig.CLIENT_OP, v -> SharedConstants.DEBUG_RAIDS = v),
+        new DebugProperty<Boolean>("BLOCK_BREAK", DebugPropertyConfig.SERVER_GLOBAL, v -> SharedConstants.DEBUG_BLOCK_BREAK = v),
+        new DebugProperty<Boolean>("MONITOR_TICK_TIMES", DebugPropertyConfig.SERVER_GLOBAL, v -> SharedConstants.DEBUG_MONITOR_TICK_TIMES = v),
+        new DebugProperty<Boolean>("KEEP_JIGSAW_BLOCKS_DURING_STRUCTURE_GEN", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_KEEP_JIGSAW_BLOCKS_DURING_STRUCTURE_GEN = v),
+        new DebugProperty<Boolean>("DONT_SAVE_WORLD", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_DONT_SAVE_WORLD = v),
+        new DebugProperty<Boolean>("LARGE_DRIPSTONE", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_LARGE_DRIPSTONE = v),
+        new DebugProperty<Boolean>("CARVERS", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_CARVERS = v),
+        new DebugProperty<Boolean>("ORE_VEINS", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_ORE_VEINS = v),
+        new DebugProperty<Boolean>("SCULK_CATALYST", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_SCULK_CATALYST = v),
+        new DebugProperty<Boolean>("BYPASS_REALMS_VERSION_CHECK", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_BYPASS_REALMS_VERSION_CHECK = v),
+        new DebugProperty<Boolean>("SOCIAL_INTERACTIONS", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_SOCIAL_INTERACTIONS = v),
+        new DebugProperty<Boolean>("VALIDATE_RESOURCE_PATH_CASE", DebugPropertyConfig.SERVER_GLOBAL, v -> SharedConstants.DEBUG_VALIDATE_RESOURCE_PATH_CASE = v),
+        new DebugProperty<Boolean>("UNLOCK_ALL_TRADES", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_UNLOCK_ALL_TRADES = v),
+        new DebugProperty<Boolean>("BREEZE_MOB", DebugPropertyConfig.CLIENT_OP, v -> SharedConstants.DEBUG_BREEZE_MOB = v),
+        new DebugProperty<Boolean>("TRIAL_SPAWNER_DETECTS_SHEEP_AS_PLAYERS", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_TRIAL_SPAWNER_DETECTS_SHEEP_AS_PLAYERS = v),
+        new DebugProperty<Boolean>("VAULT_DETECTS_SHEEP_AS_PLAYERS", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_VAULT_DETECTS_SHEEP_AS_PLAYERS = v),
+        new DebugProperty<Boolean>("FORCE_ONBOARDING_SCREEN", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_FORCE_ONBOARDING_SCREEN = v),
+        new DebugProperty<Boolean>("CURSOR_POS", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_CURSOR_POS = v),
+        new DebugProperty<Boolean>("DEFAULT_SKIN_OVERRIDE", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_DEFAULT_SKIN_OVERRIDE = v),
+        new DebugProperty<Boolean>("PANORAMA_SCREENSHOT", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_PANORAMA_SCREENSHOT = v),
+        new DebugProperty<Boolean>("CHASE_COMMAND", DebugPropertyConfig.SERVER_GLOBAL, v -> SharedConstants.DEBUG_CHASE_COMMAND = v),
+        new DebugProperty<Boolean>("VERBOSE_COMMAND_ERRORS", DebugPropertyConfig.SERVER_GLOBAL, v -> SharedConstants.DEBUG_VERBOSE_COMMAND_ERRORS = v),
+        new DebugProperty<Boolean>("DEV_COMMANDS", DebugPropertyConfig.SERVER_GLOBAL, v -> SharedConstants.DEBUG_DEV_COMMANDS = v),
+        new DebugProperty<Boolean>("ACTIVE_TEXT_AREAS", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_ACTIVE_TEXT_AREAS = v),
+        new DebugProperty<Boolean>("IGNORE_LOCAL_MOB_CAP", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_IGNORE_LOCAL_MOB_CAP = v),
+        new DebugProperty<Boolean>("DISABLE_LIQUID_SPREADING", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_DISABLE_LIQUID_SPREADING = v),
+        new DebugProperty<Boolean>("AQUIFERS", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_AQUIFERS = v),
+        new DebugProperty<Boolean>("JFR_PROFILING_ENABLE_LEVEL_LOADING", DebugPropertyConfig.SERVER_GLOBAL, v -> SharedConstants.DEBUG_JFR_PROFILING_ENABLE_LEVEL_LOADING = v),
+        new DebugProperty<Boolean>("ENTITY_BLOCK_INTERSECTION", DebugPropertyConfig.CLIENT_OP, v -> SharedConstants.DEBUG_ENTITY_BLOCK_INTERSECTION = v),
+        new DebugProperty<Boolean>("GENERATE_SQUARE_TERRAIN_WITHOUT_NOISE", DebugPropertyConfig.SERVER, v -> SharedConstants.debugGenerateSquareTerrainWithoutNoise = v),
+        new DebugProperty<Boolean>("ONLY_GENERATE_HALF_THE_WORLD", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_ONLY_GENERATE_HALF_THE_WORLD = v),
+        new DebugProperty<Boolean>("DISABLE_FLUID_GENERATION", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_DISABLE_FLUID_GENERATION = v),
+        new DebugProperty<Boolean>("DISABLE_AQUIFERS", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_DISABLE_AQUIFERS = v),
+        new DebugProperty<Boolean>("DISABLE_SURFACE", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_DISABLE_SURFACE = v),
+        new DebugProperty<Boolean>("DISABLE_CARVERS", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_DISABLE_CARVERS = v),
+        new DebugProperty<Boolean>("DISABLE_STRUCTURES", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_DISABLE_STRUCTURES = v),
+        new DebugProperty<Boolean>("DISABLE_FEATURES", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_DISABLE_FEATURES = v),
+        new DebugProperty<Boolean>("DISABLE_ORE_VEINS", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_DISABLE_ORE_VEINS = v),
+        new DebugProperty<Boolean>("DISABLE_BLENDING", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_DISABLE_BLENDING = v),
+        new DebugProperty<Boolean>("DISABLE_BELOW_ZERO_RETROGENERATION", DebugPropertyConfig.SERVER, v -> SharedConstants.DEBUG_DISABLE_BELOW_ZERO_RETROGENERATION = v),
+        new DebugProperty<Boolean>("SUBTITLES", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_SUBTITLES = v),
+        new DebugProperty<Integer>("FAKE_LATENCY_MS", DebugPropertyConfig.SERVER_GLOBAL, v -> SharedConstants.DEBUG_FAKE_LATENCY_MS = v),
+        new DebugProperty<Integer>("FAKE_JITTER_MS", DebugPropertyConfig.SERVER_GLOBAL, v -> SharedConstants.DEBUG_FAKE_JITTER_MS = v),
+        new DebugProperty<Boolean>("COMMAND_STACK_TRACES", DebugPropertyConfig.SERVER_GLOBAL, v -> CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES = v),
+        new DebugProperty<Boolean>("WORLD_RECREATE", DebugPropertyConfig.CLIENT, v -> SharedConstants.DEBUG_WORLD_RECREATE = v),
+        new DebugProperty<Boolean>("SHOW_SERVER_DEBUG_VALUES", DebugPropertyConfig.SINGLEPLAYER, v -> SharedConstants.DEBUG_SHOW_SERVER_DEBUG_VALUES = v),
+        new DebugProperty<Boolean>("FEATURE_COUNT", DebugPropertyConfig.SERVER_GLOBAL, v -> SharedConstants.DEBUG_FEATURE_COUNT = v)
+    );
+
+}
