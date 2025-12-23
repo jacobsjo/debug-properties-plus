@@ -1,0 +1,43 @@
+package eu.jacobsjo.debugPropertiesPlus.client.property.storage;
+
+import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
+import eu.jacobsjo.debugPropertiesPlus.property.storage.DebugPropertyConfigStorage;
+import eu.jacobsjo.debugPropertiesPlus.property.storage.DebugPropertyStorage;
+import eu.jacobsjo.debugPropertiesPlus.property.storage.DebugPropertyWorldStorage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.server.MinecraftServer;
+import org.jspecify.annotations.Nullable;
+
+import java.io.File;
+import java.util.Optional;
+
+public class DebugPropertyClientStorage {
+    private static final File configFile = new File("debug-properties-plus.json");
+    private static final DebugPropertyStorage configStorage = DebugPropertyConfigStorage.getStorage(configFile);
+
+    private static @Nullable DebugPropertyStorage getStorage(DebugProperty<?> property){
+        Minecraft minecraft = Minecraft.getInstance();
+
+        if (property.config.perWorld()) {
+            MinecraftServer server = minecraft.getSingleplayerServer();
+            if (server == null) return null;
+            return DebugPropertyWorldStorage.getStorage(server);
+        } else {
+            return configStorage;
+        }
+    }
+
+    public static <T> Optional<T> get(DebugProperty<T> property) {
+        DebugPropertyStorage storage = getStorage(property);
+        if (storage == null) return Optional.empty();
+        return Optional.of(storage.get(property));
+    }
+
+    public static <T> void set(DebugProperty<T> property, T value) {
+        DebugPropertyStorage storage = getStorage(property);
+        if (storage == null){
+            throw new IllegalStateException("Can't set property " + property + " - No stoage found");
+        }
+        storage.set(property, value);
+    }
+}

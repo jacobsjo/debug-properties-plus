@@ -1,6 +1,7 @@
 package eu.jacobsjo.debugPropertiesPlus.client.screen;
 
 import com.google.common.collect.Lists;
+import eu.jacobsjo.debugPropertiesPlus.client.property.storage.DebugPropertyClientStorage;
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -30,12 +31,12 @@ public class DebugPropertyScreen extends Screen {
     private DebugPropertyScreen.@Nullable PropertyList propertyList;
     private @Nullable EditBox searchBox;
 
-    private final boolean perWorld;
+    private final boolean worldCreation;
     @Nullable private final Runnable exitCallback;
 
     public DebugPropertyScreen(final boolean perWorld, @Nullable Runnable exitCallback) {
         super(TITLE);
-        this.perWorld = perWorld;
+        this.worldCreation = perWorld;
         this.exitCallback = exitCallback;
     }
 
@@ -113,10 +114,10 @@ public class DebugPropertyScreen extends Screen {
         public void updateSearch(String string) {
             this.clearEntries();
 
-            for (DebugProperty<?> debugProperty : DebugProperty.PROPERTIES) {
-                if (debugProperty.config.perWorld() == DebugPropertyScreen.this.perWorld && debugProperty.name.contains(string)) {
-                    if (debugProperty.type == Boolean.class){
-                        this.addEntry(new BooleanPropertyEntry((DebugProperty<Boolean>) debugProperty));
+            for (DebugProperty<?> property : DebugProperty.PROPERTIES.values()) {
+                if (DebugPropertyScreen.this.includeProperty(property) && property.name.contains(string)) {
+                    if (property.type == Boolean.class){
+                        this.addEntry(new BooleanPropertyEntry((DebugProperty<Boolean>) property));
                     }
                 }
             }
@@ -130,15 +131,23 @@ public class DebugPropertyScreen extends Screen {
         }
     }
 
+    private boolean includeProperty(DebugProperty<?> property){
+        if (this.worldCreation){
+            return property.config.perWorld();
+        } else {
+            Minecraft minecraft = Minecraft.getInstance();
+            boolean isIngame = minecraft.getConnection() != null;
+            return !property.config.perWorld() || isIngame;
+        }
+    }
+
     private abstract class PropertyEntry<T> extends ContainerObjectSelectionList.Entry<PropertyEntry<?>> {
-        protected final DebugProperty<T> property;
+        final DebugProperty<T> property;
 
         protected final List<AbstractWidget> children = Lists.<AbstractWidget>newArrayList();
 
         public PropertyEntry(final DebugProperty<T> property) {
             this.property = property;
-
-
         }
 
         @Override
@@ -162,14 +171,15 @@ public class DebugPropertyScreen extends Screen {
     private class BooleanPropertyEntry extends PropertyEntry<Boolean> {
         private final Checkbox checkbox;
 
-        public BooleanPropertyEntry(DebugProperty<Boolean> property) {
-            super(property);
+        public BooleanPropertyEntry(DebugProperty<Boolean> propertyKey) {
+            super(propertyKey);
 
             Component message = Component.literal("");
+
             this.checkbox = Checkbox.builder(message, DebugPropertyScreen.this.font)
                     .maxWidth(60)
-                    .selected(property.get())
-                    .onValueChange((cb, v) -> property.set(v))
+                    .selected(DebugPropertyClientStorage.get(property).orElse(false))
+                    .onValueChange((cb, v) -> DebugPropertyClientStorage.set(property, v))
                     .build();
             this.children.add(this.checkbox);
             this.refreshEntry();
@@ -185,7 +195,7 @@ public class DebugPropertyScreen extends Screen {
         }
 
         public void refreshEntry() {
-            boolean value = this.property.get();
+            boolean value = DebugPropertyClientStorage.get(this.property).orElse(false);
             if (this.checkbox.selected() != value){
                 this.checkbox.onPress(null);
             }
