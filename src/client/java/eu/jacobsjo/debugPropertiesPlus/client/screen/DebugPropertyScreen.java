@@ -119,6 +119,8 @@ public class DebugPropertyScreen extends Screen {
                 if (DebugPropertyScreen.this.includeProperty(property) && property.name.contains(string.toUpperCase(Locale.ROOT))) {
                     if (property.type == Boolean.class){
                         this.addEntry(new BooleanPropertyEntry((DebugProperty<Boolean>) property));
+                    } else if (property.type == Integer.class){
+                        this.addEntry(new IntegerPropertyEntry((DebugProperty<Integer>) property));
                     }
                 }
             }
@@ -179,7 +181,7 @@ public class DebugPropertyScreen extends Screen {
 
             this.checkbox = Checkbox.builder(message, DebugPropertyScreen.this.font)
                     .maxWidth(60)
-                    .selected(DebugPropertyClientStorage.get(property).orElse(false))
+                    .selected(DebugPropertyClientStorage.get(property).orElse(propertyKey.defaultValue))
                     .onValueChange((cb, v) -> DebugPropertyClientStorage.set(property, v))
                     .build();
             this.children.add(this.checkbox);
@@ -203,4 +205,39 @@ public class DebugPropertyScreen extends Screen {
         }
     }
 
+    private class IntegerPropertyEntry extends PropertyEntry<Integer> {
+        private final EditBox editbox;
+
+        public IntegerPropertyEntry(DebugProperty<Integer> property) {
+            super(property);
+
+            this.editbox = new EditBox(DebugPropertyScreen.super.font, 40, 20, Component.literal(property.name));
+            this.editbox.setValue(DebugPropertyClientStorage.get(property).orElse(property.defaultValue).toString());
+            this.editbox.setResponder(v -> {
+                try {
+                    int value = Integer.parseInt(v);
+                    this.editbox.setTextColor(-2039584);
+                    DebugPropertyClientStorage.set(property, value);
+                } catch (NumberFormatException e) {
+                    this.editbox.setTextColor(-65536);
+                }
+
+            });
+            this.children.add(this.editbox);
+            this.refreshEntry();
+        }
+
+        @Override
+        public void renderContent(GuiGraphics guiGraphics, int i, int j, boolean bl, float f) {
+            super.renderContent(guiGraphics, i, j, bl, f);
+
+            this.editbox.setX(this.getContentX() + this.getContentWidth() - this.editbox.getWidth());
+            this.editbox.setY(this.getContentY());
+            this.editbox.render(guiGraphics, i, j, f);
+        }
+
+        public void refreshEntry() {
+            this.editbox.setValue(DebugPropertyClientStorage.get(this.property).orElse(this.property.defaultValue).toString());
+        }
+    }
 }
