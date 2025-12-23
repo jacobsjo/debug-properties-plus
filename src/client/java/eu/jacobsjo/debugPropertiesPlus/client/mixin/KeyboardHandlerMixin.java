@@ -1,5 +1,6 @@
 package eu.jacobsjo.debugPropertiesPlus.client.mixin;
 
+import eu.jacobsjo.debugPropertiesPlus.client.DebugPropertiesPlusClient;
 import eu.jacobsjo.debugPropertiesPlus.client.screen.DebugPropertyScreen;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
@@ -20,7 +21,7 @@ public class KeyboardHandlerMixin {
 
     @Inject(method = "handleDebugKeys", at= @At("TAIL"), cancellable = true)
     public void handleDebugKeys(KeyEvent keyEvent, CallbackInfoReturnable<Boolean> cir){
-        if (keyEvent.key() == java.awt.event.KeyEvent.VK_P){
+        if (DebugPropertiesPlusClient.screenOpenKey.matches(keyEvent)){
             if (this.minecraft.screen instanceof DebugPropertyScreen) {
                 this.minecraft.screen.onClose();
             } else if (this.minecraft.canInterruptScreen()) {

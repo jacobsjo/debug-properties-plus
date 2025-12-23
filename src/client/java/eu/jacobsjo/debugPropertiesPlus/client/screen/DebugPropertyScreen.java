@@ -18,6 +18,7 @@ import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Locale;
 
 public class DebugPropertyScreen extends Screen {
     private static final Component TITLE = Component.translatable("eu.jacobsjo.debugPropertiesPlus.screen.title");
@@ -115,7 +116,7 @@ public class DebugPropertyScreen extends Screen {
             this.clearEntries();
 
             for (DebugProperty<?> property : DebugProperty.PROPERTIES.values()) {
-                if (DebugPropertyScreen.this.includeProperty(property) && property.name.contains(string)) {
+                if (DebugPropertyScreen.this.includeProperty(property) && property.name.contains(string.toUpperCase(Locale.ROOT))) {
                     if (property.type == Boolean.class){
                         this.addEntry(new BooleanPropertyEntry((DebugProperty<Boolean>) property));
                     }
