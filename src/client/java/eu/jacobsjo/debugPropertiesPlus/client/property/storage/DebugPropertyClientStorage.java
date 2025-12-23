@@ -14,6 +14,7 @@ import java.util.Optional;
 public class DebugPropertyClientStorage {
     private static final File configFile = new File("debug-properties-plus.json");
     private static @Nullable DebugPropertyStorage configStorage;
+    private static @Nullable DebugPropertyWorldStorage createNewWorldStorage;
     private static final Minecraft minecraft = Minecraft.getInstance();
 
     public static void bootstrap() {
@@ -24,10 +25,30 @@ public class DebugPropertyClientStorage {
 
         if (property.config.perWorld()) {
             MinecraftServer server = minecraft.getSingleplayerServer();
-            if (server == null) return null;
-            return DebugPropertyWorldStorage.getStorage(server);
+            if (server != null){
+                return DebugPropertyWorldStorage.getStorage(server);
+            } else if (createNewWorldStorage != null){
+                return createNewWorldStorage;
+            }
         } else {
             return configStorage;
+        }
+        return null;
+    }
+
+    public static void startCreateNewWorld(){
+        createNewWorldStorage = new DebugPropertyWorldStorage();
+    }
+
+    public static void cancelCreateNewWorld(){
+        createNewWorldStorage = null;
+    }
+    public static void onCreateNewWorld(MinecraftServer server){
+        if (createNewWorldStorage != null) {
+            DebugPropertyWorldStorage.setStorage(server, createNewWorldStorage);
+            createNewWorldStorage = null;
+        } else {
+            DebugPropertyWorldStorage.getStorage(server);
         }
     }
 

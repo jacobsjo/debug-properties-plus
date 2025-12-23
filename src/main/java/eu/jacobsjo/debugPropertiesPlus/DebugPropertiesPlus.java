@@ -14,6 +14,10 @@ public class DebugPropertiesPlus implements ModInitializer {
         DebugProperty.bootstrap();
 
         // initalize per world storage, so it sets the debug properties
-        ServerWorldEvents.LOAD.register((server, level) -> DebugPropertyWorldStorage.getStorage(server));
+        ServerWorldEvents.LOAD.register((server, level) -> {
+            if (server.isDedicatedServer()) {
+                DebugPropertyWorldStorage.getStorage(server);
+            }
+        });
     }
 }
