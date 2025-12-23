@@ -55,6 +55,7 @@ public class DebugPropertyConfigStorage implements DebugPropertyStorage{
         try (FileWriter fileWriter = new FileWriter(file)) {
             JsonElement json = VALUE_MAP_CODEC.encodeStart(JsonOps.INSTANCE, valueMap).getOrThrow();
             JsonWriter writer = new JsonWriter(fileWriter);
+            writer.setIndent("  ");
             GsonHelper.writeValue(writer, json, null);
         } catch (IOException e) {
             //TODO logging: file writing error
