@@ -1,6 +1,6 @@
 package eu.jacobsjo.debugPropertiesPlus.client;
 
-import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
+import eu.jacobsjo.debugPropertiesPlus.client.property.storage.DebugPropertyClientStorage;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.Minecraft;
 
@@ -10,10 +10,6 @@ public class DebugPropertiesPlusClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        DebugProperty.onChange(debugProperty -> {
-            if (debugProperty.config.updateDebugRenderer()){
-                minecraft.debugEntries.rebuildCurrentList();
-            }
-        });
+        DebugPropertyClientStorage.bootstrap();
     }
 }

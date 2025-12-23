@@ -4,9 +4,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import net.minecraft.SharedConstants;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -48,13 +46,8 @@ public class DebugProperty<T>{
             throw new IllegalArgumentException("Trying to set value of wrong type");
         }
         this.setter.accept((T) value);
-        CALLBACKS.forEach(c -> c.accept(this));
     }
 
-    private static List<Consumer<DebugProperty<?>>> CALLBACKS = new ArrayList<>();
-    public static void onChange(Consumer<DebugProperty<?>> callback){
-        CALLBACKS.add(callback);
-    }
     public static final Map<String, DebugProperty<?>> PROPERTIES = new HashMap<>();
 
 

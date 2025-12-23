@@ -13,10 +13,14 @@ import java.util.Optional;
 
 public class DebugPropertyClientStorage {
     private static final File configFile = new File("debug-properties-plus.json");
-    private static final DebugPropertyStorage configStorage = DebugPropertyConfigStorage.getStorage(configFile);
+    private static @Nullable DebugPropertyStorage configStorage;
+    private static final Minecraft minecraft = Minecraft.getInstance();
+
+    public static void bootstrap() {
+        configStorage = DebugPropertyConfigStorage.getStorage(configFile);
+    }
 
     private static @Nullable DebugPropertyStorage getStorage(DebugProperty<?> property){
-        Minecraft minecraft = Minecraft.getInstance();
 
         if (property.config.perWorld()) {
             MinecraftServer server = minecraft.getSingleplayerServer();
@@ -39,5 +43,9 @@ public class DebugPropertyClientStorage {
             throw new IllegalStateException("Can't set property " + property + " - No stoage found");
         }
         storage.set(property, value);
+
+        if (property.config.updateDebugRenderer()){
+            minecraft.debugEntries.rebuildCurrentList();
+        }
     }
 }
