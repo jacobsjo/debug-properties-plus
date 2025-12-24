@@ -1,0 +1,7 @@
+{
+  "debug-properties-plus.button.open-screen": "Debug Properties",
+  "debug-properties-plus.screen.title": "Debug Properties",
+  "debug-properties-plus.screen.warning": "Debug properties exist for debugging purposes only. They might corrupt your world! Only change if you know what you are doing.",
+  "debug-properties-plus.screen.header.global": "Global debug properties:",
+  "debug-properties-plus.screen.header.perWorld": "Per world debug properties:"
+}

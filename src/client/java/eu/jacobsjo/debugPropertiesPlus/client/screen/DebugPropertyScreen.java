@@ -6,6 +6,8 @@ import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LayoutSettings;
@@ -21,8 +23,10 @@ import java.util.List;
 import java.util.Locale;
 
 public class DebugPropertyScreen extends Screen {
-    private static final Component TITLE = Component.translatable("eu.jacobsjo.debugPropertiesPlus.screen.title");
-    private static final Component SUBTITLE = Component.translatable("eu.jacobsjo.debugPropertiesPlus.screen.warning").withColor(-2142128);
+    private static final Component TITLE = Component.translatable("debug-properties-plus.screen.title");
+    private static final Component SUBTITLE = Component.translatable("debug-properties-plus.screen.warning").withColor(0xFFFF0000);
+    private static final Component PER_WORLD_HEADER = Component.translatable("debug-properties-plus.screen.header.perWorld").withColor(0xFFFFF060);
+    private static final Component GLOBAL_HEADER = Component.translatable("debug-properties-plus.screen.header.global").withColor(0xFFFFF060);
 
     private static final Component SEARCH = Component.translatable("debug.options.search").withStyle(EditBox.SEARCH_HINT_STYLE);
 
@@ -67,7 +71,7 @@ public class DebugPropertyScreen extends Screen {
 
         // Footer: Done button
         LinearLayout footer = this.layout.addToFooter(LinearLayout.horizontal().spacing(8));
-        footer.addChild(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).width(60).build());
+        footer.addChild(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).width(140).build());
         this.layout.visitWidgets(this::addRenderableWidget);
         this.repositionElements();
     }
@@ -95,7 +99,7 @@ public class DebugPropertyScreen extends Screen {
         }
     }
 
-    private class PropertyList extends ContainerObjectSelectionList<DebugPropertyScreen.PropertyEntry<?>> {
+    private class PropertyList extends ContainerObjectSelectionList<AbstractPropertyEntry> {
         public PropertyList() {
             super(
                     Minecraft.getInstance(),
@@ -115,15 +119,21 @@ public class DebugPropertyScreen extends Screen {
         public void updateSearch(String string) {
             this.clearEntries();
 
-            for (DebugProperty<?> property : DebugProperty.PROPERTIES.values()) {
+            List<DebugProperty<?>> properties = DebugProperty.PROPERTIES.values().stream().sorted().toList();
+            Boolean perWorld = null;
+            for (DebugProperty<?> property : properties)
                 if (DebugPropertyScreen.this.includeProperty(property) && property.name.contains(string.toUpperCase(Locale.ROOT))) {
-                    if (property.type == Boolean.class){
+                    if (perWorld == null || property.config.perWorld() != perWorld){
+                        this.addEntry(new PropertyHeader(property.config.perWorld() ? PER_WORLD_HEADER : GLOBAL_HEADER));
+                        perWorld = property.config.perWorld();
+                    }
+
+                    if (property.type == Boolean.class) {
                         this.addEntry(new BooleanPropertyEntry((DebugProperty<Boolean>) property));
-                    } else if (property.type == Integer.class){
+                    } else if (property.type == Integer.class) {
                         this.addEntry(new IntegerPropertyEntry((DebugProperty<Integer>) property));
                     }
                 }
-            }
 
             this.notifyListUpdated();
         }
@@ -144,7 +154,32 @@ public class DebugPropertyScreen extends Screen {
         }
     }
 
-    private abstract class PropertyEntry<T> extends ContainerObjectSelectionList.Entry<PropertyEntry<?>> {
+    private abstract static class AbstractPropertyEntry extends ContainerObjectSelectionList.Entry<AbstractPropertyEntry> {}
+
+    private class PropertyHeader extends AbstractPropertyEntry {
+
+        private final Component text;
+        public PropertyHeader(Component text){
+            this.text = text;
+        }
+
+        @Override
+        public List<? extends NarratableEntry> narratables() {
+            return List.of();
+        }
+
+        @Override
+        public void renderContent(GuiGraphics guiGraphics, int i, int j, boolean bl, float f) {
+            guiGraphics.drawString(DebugPropertyScreen.this.minecraft.font, text, this.getContentX(), this.getContentY() + 5, -1);
+        }
+
+        @Override
+        public List<? extends GuiEventListener> children() {
+            return List.of();
+        }
+    }
+
+    private abstract class PropertyEntry<T> extends AbstractPropertyEntry {
         final DebugProperty<T> property;
 
         protected final List<AbstractWidget> children = Lists.<AbstractWidget>newArrayList();
@@ -211,7 +246,7 @@ public class DebugPropertyScreen extends Screen {
         public IntegerPropertyEntry(DebugProperty<Integer> property) {
             super(property);
 
-            this.editbox = new EditBox(DebugPropertyScreen.super.font, 40, 20, Component.literal(property.name));
+            this.editbox = new EditBox(DebugPropertyScreen.super.font, 40, 16, Component.literal(property.name));
             this.editbox.setValue(DebugPropertyClientStorage.get(property).orElse(property.defaultValue).toString());
             this.editbox.setResponder(v -> {
                 try {

@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class DebugProperty<T>{
+public class DebugProperty<T> implements Comparable<DebugProperty<?>>{
 
     public final Class<T> type;
     public final Codec<T> valueCodec;
@@ -46,6 +46,13 @@ public class DebugProperty<T>{
             throw new IllegalArgumentException("Trying to set value of wrong type");
         }
         this.setter.accept((T) value);
+    }
+
+    @Override
+    public int compareTo(DebugProperty<?> other){
+        if (this.config.perWorld() && !other.config.perWorld()) return 1;
+        if (!this.config.perWorld() && other.config.perWorld()) return -1;
+        return this.name.compareTo(other.name);
     }
 
     public static final Map<String, DebugProperty<?>> PROPERTIES = new HashMap<>();

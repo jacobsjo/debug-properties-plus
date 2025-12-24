@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(targets = "net.minecraft.client.gui.screens.worldselection.CreateWorldScreen$MoreTab")
 public class CreateWorldScreenMoreTabMixin {
-    @Unique private static final Component DEBUG_PROPERTIES_LABEL = Component.translatable("eu.jacobsjo.TODO");
+    @Unique private static final Component DEBUG_PROPERTIES_LABEL = Component.translatable("debug-properties-plus.button.open-screen");
     @Unique private static final Minecraft minecraft = Minecraft.getInstance();
 
     // Synthtic field of outer class
