@@ -26,6 +26,7 @@ public class DebugPropertyScreen extends Screen {
     private static final Component TITLE = Component.translatable("debug-properties-plus.screen.title");
     private static final Component SUBTITLE = Component.translatable("debug-properties-plus.screen.warning").withColor(0xFFFF0000);
     private static final Component PER_WORLD_HEADER = Component.translatable("debug-properties-plus.screen.header.perWorld").withColor(0xFFFFF060);
+    private static final Component PER_WORLD_DEFAULT_HEADER = Component.translatable("debug-properties-plus.screen.header.perWorld.default").withColor(0xFFFFF060);
     private static final Component GLOBAL_HEADER = Component.translatable("debug-properties-plus.screen.header.global").withColor(0xFFFFF060);
     private static final Component WARNING_REQUIRES_OP = Component.translatable("debug-properties-plus.screen.warning.requires-op").withColor(0xFFFFF060);
     private static final Component WARNING_SINGLEPLAYER = Component.translatable("debug-properties-plus.screen.warning.singleplayer").withColor(0xFFFFF060);
@@ -127,7 +128,9 @@ public class DebugPropertyScreen extends Screen {
             for (DebugProperty<?> property : properties)
                 if (DebugPropertyScreen.this.includeProperty(property) && property.name.contains(string.toUpperCase(Locale.ROOT))) {
                     if (perWorld == null || property.config.perWorld() != perWorld){
-                        this.addEntry(new PropertyHeader(property.config.perWorld() ? PER_WORLD_HEADER : GLOBAL_HEADER));
+                        this.addEntry(new PropertyHeader(property.config.perWorld()
+                                ? DebugPropertyScreen.this.minecraft.getConnection() != null ? PER_WORLD_HEADER : PER_WORLD_DEFAULT_HEADER
+                                : GLOBAL_HEADER));
                         perWorld = property.config.perWorld();
                     }
 
@@ -151,9 +154,7 @@ public class DebugPropertyScreen extends Screen {
         if (this.worldCreation){
             return property.config.perWorld();
         } else {
-            Minecraft minecraft = Minecraft.getInstance();
-            boolean isIngame = minecraft.getConnection() != null;
-            return !property.config.perWorld() || isIngame;
+            return true;
         }
     }
 

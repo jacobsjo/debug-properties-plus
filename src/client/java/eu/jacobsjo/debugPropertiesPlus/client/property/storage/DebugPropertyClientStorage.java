@@ -30,14 +30,12 @@ public class DebugPropertyClientStorage {
             } else if (createNewWorldStorage != null){
                 return createNewWorldStorage;
             }
-        } else {
-            return configStorage;
         }
-        return null;
+        return configStorage;
     }
 
     public static void startCreateNewWorld(){
-        createNewWorldStorage = new DebugPropertyWorldStorage();
+        createNewWorldStorage = new DebugPropertyWorldStorage(configStorage);
     }
 
     public static void cancelCreateNewWorld(){

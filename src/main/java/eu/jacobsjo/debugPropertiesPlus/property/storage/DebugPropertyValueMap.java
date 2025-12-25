@@ -26,6 +26,19 @@ public class DebugPropertyValueMap {
         this.setDebugPropertiesFromStore();
     }
 
+    DebugPropertyValueMap(DebugPropertyStorage defaults, Predicate<DebugProperty<?>> predicate){
+        this.values = new Reference2ObjectOpenHashMap<>();
+        DebugProperty.PROPERTIES.values().stream().filter(predicate).forEach(p -> {
+            Object value = defaults.get(p);
+            if (!value.equals(p.defaultValue)) {
+                this.values.put(p, defaults.get(p));
+            }
+        });
+        this.predicate = predicate;
+        this.setStoreFromDebugProperties();
+        this.setDebugPropertiesFromStore();
+    }
+
     DebugPropertyValueMap(Predicate<DebugProperty<?>> predicate){
         this.values = new Reference2ObjectOpenHashMap<>();
         this.predicate = predicate;

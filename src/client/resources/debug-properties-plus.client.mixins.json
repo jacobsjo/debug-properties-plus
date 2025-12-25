@@ -6,7 +6,8 @@
   "client": [
     "CreateWorldScreenMixin",
     "CreateWorldScreenMoreTabMixin",
-    "KeyboardHandlerMixin"
+    "KeyboardHandlerMixin",
+    "SelectWorldScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -32,6 +32,10 @@ public class DebugPropertyWorldStorage extends SavedData implements DebugPropert
         this.setDirty();
     }
 
+    public DebugPropertyWorldStorage(DebugPropertyStorage defaults) {
+        this.valueMap = new DebugPropertyValueMap(defaults, p -> p.config.perWorld());
+    }
+
     private DebugPropertyWorldStorage(DebugPropertyValueMap map) {
         this.valueMap = map;
         this.setDirty();

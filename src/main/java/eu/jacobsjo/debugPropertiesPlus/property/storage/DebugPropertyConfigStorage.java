@@ -15,7 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class DebugPropertyConfigStorage implements DebugPropertyStorage{
-    private static final Codec<DebugPropertyValueMap> VALUE_MAP_CODEC = DebugPropertyValueMap.codec(p -> !p.config.perWorld());
+    private static final Codec<DebugPropertyValueMap> VALUE_MAP_CODEC = DebugPropertyValueMap.codec(p -> true);
 
     private final DebugPropertyValueMap valueMap;
     private final @Nullable File file;
@@ -25,7 +25,7 @@ public class DebugPropertyConfigStorage implements DebugPropertyStorage{
     }
 
     private DebugPropertyConfigStorage(@Nullable File file) {
-        this.valueMap = new DebugPropertyValueMap(p -> !p.config.perWorld());
+        this.valueMap = new DebugPropertyValueMap(p -> true);
         this.file = file;
     }
 
