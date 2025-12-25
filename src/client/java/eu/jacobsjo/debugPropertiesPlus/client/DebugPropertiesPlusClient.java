@@ -6,13 +6,11 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 public class DebugPropertiesPlusClient implements ClientModInitializer {
-    Minecraft minecraft = Minecraft.getInstance();
-
-    public static KeyMapping screenOpenKey;
+    public static @Nullable KeyMapping screenOpenKey;
 
     @Override
     public void onInitializeClient() {

@@ -6,8 +6,6 @@ import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LayoutSettings;
@@ -17,6 +15,8 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.permissions.Permissions;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -27,6 +27,9 @@ public class DebugPropertyScreen extends Screen {
     private static final Component SUBTITLE = Component.translatable("debug-properties-plus.screen.warning").withColor(0xFFFF0000);
     private static final Component PER_WORLD_HEADER = Component.translatable("debug-properties-plus.screen.header.perWorld").withColor(0xFFFFF060);
     private static final Component GLOBAL_HEADER = Component.translatable("debug-properties-plus.screen.header.global").withColor(0xFFFFF060);
+    private static final Component WARNING_REQUIRES_OP = Component.translatable("debug-properties-plus.screen.warning.requires-op").withColor(0xFFFFF060);
+    private static final Component WARNING_SINGLEPLAYER = Component.translatable("debug-properties-plus.screen.warning.singleplayer").withColor(0xFFFFF060);
+    private static final Identifier WARNING_SPRITE = Identifier.fromNamespaceAndPath("debug-properties-plus","warning");
 
     private static final Component SEARCH = Component.translatable("debug.options.search").withStyle(EditBox.SEARCH_HINT_STYLE);
 
@@ -183,10 +186,30 @@ public class DebugPropertyScreen extends Screen {
         final DebugProperty<T> property;
 
         protected final List<AbstractWidget> children = Lists.<AbstractWidget>newArrayList();
+        private final LinearLayout nameLayout;
 
         public PropertyEntry(final DebugProperty<T> property) {
             this.property = property;
+
+            nameLayout = LinearLayout.horizontal();
+            nameLayout.addChild(new StringWidget(Component.literal(this.property.name), DebugPropertyScreen.this.minecraft.font), nameLayout.newCellSettings().alignVerticallyMiddle() );
+
+            Component warning = null;
+            if (DebugPropertyScreen.this.minecraft.player != null) {
+                if (property.config.requiresOp() && !DebugPropertyScreen.this.minecraft.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
+                    warning = WARNING_REQUIRES_OP;
+                } else if (property.config.notOnMultiplayer() && !DebugPropertyScreen.this.minecraft.player.isLocalPlayer()){
+                    warning = WARNING_SINGLEPLAYER;
+                }
+            }
+
+            if (warning != null){
+                nameLayout.addChild(ImageWidget.sprite(16, 16, WARNING_SPRITE));
+                nameLayout.addChild(new StringWidget(warning, DebugPropertyScreen.this.minecraft.font), nameLayout.newCellSettings().alignVerticallyMiddle() );
+            }
+            nameLayout.visitWidgets(this.children::add);
         }
+
 
         @Override
         public List<? extends GuiEventListener> children() {
@@ -200,9 +223,13 @@ public class DebugPropertyScreen extends Screen {
 
         @Override
         public void renderContent(GuiGraphics guiGraphics, int i, int j, boolean bl, float f) {
-            int k = this.getContentX();
-            int l = this.getContentY();
-            guiGraphics.drawString(DebugPropertyScreen.this.minecraft.font, this.property.name, k, l + 5, -1);
+            int x = this.getContentX();
+            int y = this.getContentY();
+
+            this.nameLayout.setX(x);
+            this.nameLayout.setY(y);
+            this.nameLayout.arrangeElements();
+            this.nameLayout.visitWidgets(w->w.render(guiGraphics, i, j, f));
         }
     }
 

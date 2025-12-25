@@ -1,5 +1,7 @@
 package eu.jacobsjo.debugPropertiesPlus.property;
 
+import java.util.Optional;
+
 public record DebugPropertyConfig (
         boolean perWorld,
         boolean onDedicatedServer,
