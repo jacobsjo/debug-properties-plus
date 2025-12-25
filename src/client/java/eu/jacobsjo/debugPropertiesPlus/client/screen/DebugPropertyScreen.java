@@ -193,6 +193,7 @@ public class DebugPropertyScreen extends Screen {
             this.property = property;
 
             nameLayout = LinearLayout.horizontal();
+            nameLayout.addChild(new SpacerElement(0, 16));
             nameLayout.addChild(new StringWidget(Component.literal(this.property.name), DebugPropertyScreen.this.minecraft.font), nameLayout.newCellSettings().alignVerticallyMiddle() );
 
             Component warning = null;
