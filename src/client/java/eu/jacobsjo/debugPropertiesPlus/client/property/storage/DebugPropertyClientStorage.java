@@ -8,20 +8,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import org.jspecify.annotations.Nullable;
 
-import java.io.File;
-import java.util.Optional;
-
 public class DebugPropertyClientStorage {
-    private static final File configFile = new File("debug-properties-plus.json");
-    private static @Nullable DebugPropertyStorage configStorage;
     private static @Nullable DebugPropertyWorldStorage createNewWorldStorage;
     private static final Minecraft minecraft = Minecraft.getInstance();
 
-    public static void bootstrap() {
-        configStorage = DebugPropertyConfigStorage.getStorage(configFile);
-    }
-
-    private static @Nullable DebugPropertyStorage getStorage(DebugProperty<?> property){
+    private static DebugPropertyStorage getStorage(DebugProperty<?> property){
 
         if (property.config.perWorld()) {
             MinecraftServer server = minecraft.getSingleplayerServer();
@@ -31,11 +22,11 @@ public class DebugPropertyClientStorage {
                 return createNewWorldStorage;
             }
         }
-        return configStorage;
+        return DebugPropertyConfigStorage.getInstance();
     }
 
     public static void startCreateNewWorld(){
-        createNewWorldStorage = new DebugPropertyWorldStorage(configStorage);
+        createNewWorldStorage = new DebugPropertyWorldStorage(DebugPropertyConfigStorage.getInstance());
     }
 
     public static void cancelCreateNewWorld(){
@@ -50,17 +41,13 @@ public class DebugPropertyClientStorage {
         }
     }
 
-    public static <T> Optional<T> get(DebugProperty<T> property) {
+    public static <T> T get(DebugProperty<T> property) {
         DebugPropertyStorage storage = getStorage(property);
-        if (storage == null) return Optional.empty();
-        return Optional.of(storage.get(property));
+        return storage.get(property);
     }
 
     public static <T> void set(DebugProperty<T> property, T value) {
         DebugPropertyStorage storage = getStorage(property);
-        if (storage == null){
-            throw new IllegalStateException("Can't set property " + property + " - No stoage found");
-        }
         storage.set(property, value);
 
         if (property.config.updateDebugRenderer()){

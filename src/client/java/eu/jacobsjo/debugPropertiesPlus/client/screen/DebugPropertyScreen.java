@@ -245,7 +245,7 @@ public class DebugPropertyScreen extends Screen {
 
             this.checkbox = Checkbox.builder(message, DebugPropertyScreen.this.font)
                     .maxWidth(60)
-                    .selected(DebugPropertyClientStorage.get(property).orElse(propertyKey.defaultValue))
+                    .selected(DebugPropertyClientStorage.get(property))
                     .onValueChange((cb, v) -> DebugPropertyClientStorage.set(property, v))
                     .build();
             this.children.add(this.checkbox);
@@ -262,7 +262,7 @@ public class DebugPropertyScreen extends Screen {
         }
 
         public void refreshEntry() {
-            boolean value = DebugPropertyClientStorage.get(this.property).orElse(false);
+            boolean value = DebugPropertyClientStorage.get(this.property);
             if (this.checkbox.selected() != value){
                 this.checkbox.onPress(null);
             }
@@ -276,7 +276,7 @@ public class DebugPropertyScreen extends Screen {
             super(property);
 
             this.editbox = new EditBox(DebugPropertyScreen.super.font, 40, 16, Component.literal(property.name));
-            this.editbox.setValue(DebugPropertyClientStorage.get(property).orElse(property.defaultValue).toString());
+            this.editbox.setValue(DebugPropertyClientStorage.get(property).toString());
             this.editbox.setResponder(v -> {
                 try {
                     int value = Integer.parseInt(v);
@@ -301,7 +301,7 @@ public class DebugPropertyScreen extends Screen {
         }
 
         public void refreshEntry() {
-            this.editbox.setValue(DebugPropertyClientStorage.get(this.property).orElse(this.property.defaultValue).toString());
+            this.editbox.setValue(DebugPropertyClientStorage.get(this.property).toString());
         }
     }
 }

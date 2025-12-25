@@ -14,8 +14,6 @@ public class DebugPropertiesPlusClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        DebugPropertyClientStorage.bootstrap();
-
         screenOpenKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "eu.jacobsjo.debugPropertiesPlus.key.openScreen",
                 InputConstants.Type.KEYSYM,

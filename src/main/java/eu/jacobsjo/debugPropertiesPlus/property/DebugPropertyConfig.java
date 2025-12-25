@@ -1,7 +1,5 @@
 package eu.jacobsjo.debugPropertiesPlus.property;
 
-import java.util.Optional;
-
 public record DebugPropertyConfig (
         boolean perWorld,
         boolean onDedicatedServer,
@@ -25,6 +23,7 @@ public record DebugPropertyConfig (
 
         public Builder perWorld(){
             this.perWorld = true;
+            this.onDedicatedServer = true; // per world properties have to exist on dedicated servers
             return this;
         }
 

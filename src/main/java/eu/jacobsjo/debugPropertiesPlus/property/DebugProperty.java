@@ -1,5 +1,8 @@
 package eu.jacobsjo.debugPropertiesPlus.property;
 
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import net.minecraft.SharedConstants;
@@ -9,10 +12,11 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class DebugProperty<T> implements Comparable<DebugProperty<?>>{
+public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
 
     public final Class<T> type;
     public final Codec<T> valueCodec;
+    public final ArgumentType<T> argument;
     public final String name;
     public final DebugPropertyConfig config;
     private final Supplier<T> getter;
@@ -22,6 +26,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>>{
     private DebugProperty(
         Class<T> type,
         Codec<T> valueCodec,
+        ArgumentType<T> argument,
         String name,
         DebugPropertyConfig config,
         Supplier<T> getter,
@@ -30,6 +35,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>>{
     ){
         this.type = type;
         this.valueCodec = valueCodec;
+        this.argument = argument;
         this.name = name;
         this.config = config;
         this.getter = getter;
@@ -67,13 +73,14 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>>{
     private static <T> void create(
             Class<T> type,
             Codec<T> valueCodec,
+            ArgumentType<T> argument,
             String name,
             DebugPropertyConfig config,
             Supplier<T> getter,
             Consumer<T> setter,
             T defaultValue
     ){
-        PROPERTIES.put(name, new DebugProperty<>(type, valueCodec, name, config, getter, setter, defaultValue));
+        PROPERTIES.put(name, new DebugProperty<>(type, valueCodec, argument, name, config, getter, setter, defaultValue));
     }
 
     private static void createBoolean(
@@ -82,7 +89,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>>{
             Supplier<Boolean> getter,
             Consumer<Boolean> setter
     ){
-        create(Boolean.class, Codec.BOOL, name, config, getter, setter, false);
+        create(Boolean.class, Codec.BOOL, BoolArgumentType.bool(), name, config, getter, setter, false);
     }
 
     private static void createInteger(
@@ -91,14 +98,14 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>>{
             Supplier<Integer> getter,
             Consumer<Integer> setter
     ){
-        create(Integer.class, Codec.INT, name, config, getter, setter, 0);
+        create(Integer.class, Codec.INT, IntegerArgumentType.integer(), name, config, getter, setter, 0);
     }
 
     private static final DebugPropertyConfig CLIENT = new DebugPropertyConfig.Builder().build();
     private static final DebugPropertyConfig SINGLEPLAYER = new DebugPropertyConfig.Builder().notOnMultipleyer().build();
     private static final DebugPropertyConfig RENDERER = new DebugPropertyConfig.Builder().updateDebugRenderer().requiresOp().build();
     private static final DebugPropertyConfig SERVER = new DebugPropertyConfig.Builder().onDedicatedServer().build();
-    private static final DebugPropertyConfig PER_WORLD = new DebugPropertyConfig.Builder().onDedicatedServer().perWorld().build();
+    private static final DebugPropertyConfig PER_WORLD = new DebugPropertyConfig.Builder().perWorld().onDedicatedServer().build();
     private static final DebugPropertyConfig SERVER_REQUIRES_RELOAD = new DebugPropertyConfig.Builder().onDedicatedServer().requiresReload().build();
 
     public static void bootstrap(){

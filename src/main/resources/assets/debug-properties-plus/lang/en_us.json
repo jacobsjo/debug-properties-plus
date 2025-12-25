@@ -6,5 +6,7 @@
   "debug-properties-plus.screen.header.perWorld": "Per world debug properties:",
   "debug-properties-plus.screen.header.perWorld.default": "Per world debug properties: (Defaults for new worlds)",
   "debug-properties-plus.screen.warning.requires-op": "Requires OP",
-  "debug-properties-plus.screen.warning.singleplayer": "Singleplayer only"
+  "debug-properties-plus.screen.warning.singleplayer": "Singleplayer only",
+  "debug-properties-plus.command.get": "Debug property %s is currently set to: %s",
+  "debug-properties-plus.command.set": "Debug property %s is now set to: %s"
 }

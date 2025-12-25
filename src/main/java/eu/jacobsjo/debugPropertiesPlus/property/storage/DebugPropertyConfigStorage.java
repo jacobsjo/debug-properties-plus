@@ -15,14 +15,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class DebugPropertyConfigStorage implements DebugPropertyStorage{
+    private static @Nullable DebugPropertyConfigStorage INSTANCE = null;
+
     private static final Codec<DebugPropertyValueMap> VALUE_MAP_CODEC = DebugPropertyValueMap.codec(p -> true);
 
     private final DebugPropertyValueMap valueMap;
     private final @Nullable File file;
-
-    public DebugPropertyConfigStorage() {
-        this(null);
-    }
 
     private DebugPropertyConfigStorage(@Nullable File file) {
         this.valueMap = new DebugPropertyValueMap(p -> true);
@@ -35,18 +33,22 @@ public class DebugPropertyConfigStorage implements DebugPropertyStorage{
         this.updateFile();
     }
 
-    public static DebugPropertyConfigStorage getStorage(File file) {
-        try (FileReader fileReader = new FileReader(file)) {
-            JsonElement json = JsonParser.parseReader(fileReader);
-            DebugPropertyValueMap valueMap = VALUE_MAP_CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
-            return new DebugPropertyConfigStorage(valueMap, file);
-        } catch (IOException e){
-            // TODO logging: file reading error
-            return new DebugPropertyConfigStorage(file);
-        } catch (IllegalStateException e){
-            // TODO logging: decoding error
-            return new DebugPropertyConfigStorage(file);
+    public static DebugPropertyConfigStorage getInstance() {
+        if (INSTANCE == null) {
+            File file = new File("debug-properties-plus.json");
+            try (FileReader fileReader = new FileReader(file)) {
+                JsonElement json = JsonParser.parseReader(fileReader);
+                DebugPropertyValueMap valueMap = VALUE_MAP_CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
+                INSTANCE = new DebugPropertyConfigStorage(valueMap, file);
+            } catch (IOException e) {
+                // TODO logging: file reading error
+                INSTANCE = new DebugPropertyConfigStorage(file);
+            } catch (IllegalStateException e) {
+                // TODO logging: decoding error
+                INSTANCE = new DebugPropertyConfigStorage(file);
+            }
         }
+        return INSTANCE;
     }
 
     private void updateFile(){
