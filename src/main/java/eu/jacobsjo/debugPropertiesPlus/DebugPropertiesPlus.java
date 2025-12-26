@@ -2,6 +2,7 @@ package eu.jacobsjo.debugPropertiesPlus;
 
 import eu.jacobsjo.debugPropertiesPlus.command.DebugPropertyCommand;
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
+import eu.jacobsjo.debugPropertiesPlus.property.storage.DebugPropertyConfigStorage;
 import eu.jacobsjo.debugPropertiesPlus.property.storage.DebugPropertyServerStorage;
 import eu.jacobsjo.debugPropertiesPlus.property.storage.DebugPropertyWorldStorage;
 import net.fabricmc.api.ModInitializer;
@@ -17,6 +18,7 @@ public class DebugPropertiesPlus implements ModInitializer {
     public void onInitialize() {
         SharedConstants.DEBUG_ENABLED = true;
         DebugProperty.bootstrap();
+        DebugPropertyConfigStorage.getInstance();
 
         // initalize per world storage, so it sets the debug properties
         ServerWorldEvents.LOAD.register((server, level) -> {

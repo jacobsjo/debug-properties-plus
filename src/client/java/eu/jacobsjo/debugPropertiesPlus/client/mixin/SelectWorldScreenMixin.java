@@ -1,6 +1,6 @@
 package eu.jacobsjo.debugPropertiesPlus.client.mixin;
 
-import eu.jacobsjo.debugPropertiesPlus.client.property.storage.DebugPropertyClientStorage;
+import eu.jacobsjo.debugPropertiesPlus.property.storage.NewWorldStorage;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,6 +13,6 @@ public class SelectWorldScreenMixin {
 
     @Inject(method = "method_73448", at=@At("HEAD"))
     public void createDebugWorldRecreateButtonPress(Button button, CallbackInfo ci){
-        DebugPropertyClientStorage.startCreateNewWorld();
+        NewWorldStorage.startCreateNewWorld();
     }
 }

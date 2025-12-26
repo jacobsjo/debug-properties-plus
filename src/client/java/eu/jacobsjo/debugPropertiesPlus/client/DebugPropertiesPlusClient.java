@@ -1,7 +1,7 @@
 package eu.jacobsjo.debugPropertiesPlus.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import eu.jacobsjo.debugPropertiesPlus.client.property.storage.DebugPropertyClientStorage;
+import eu.jacobsjo.debugPropertiesPlus.property.storage.NewWorldStorage;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
@@ -21,7 +21,7 @@ public class DebugPropertiesPlusClient implements ClientModInitializer {
                 KeyMapping.Category.DEBUG
         ));
 
-        ServerWorldEvents.LOAD.register((server, level) -> DebugPropertyClientStorage.onCreateNewWorld(server));
+        ServerWorldEvents.LOAD.register((server, level) -> NewWorldStorage.onWorldLoad(server));
 
     }
 }

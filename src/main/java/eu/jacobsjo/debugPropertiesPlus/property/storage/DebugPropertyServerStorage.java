@@ -8,13 +8,7 @@ public class DebugPropertyServerStorage {
 
     public DebugPropertyServerStorage(MinecraftServer server){
         this.server = server;
-    }
-
-    private DebugPropertyStorage getStorage(DebugProperty<?> property){
-        if (property.config.perWorld()) {
-            return DebugPropertyWorldStorage.getStorage(server);
-        }
-        return DebugPropertyConfigStorage.getInstance();
+        DebugPropertyWorldStorage.getStorage(server);
     }
 
     public <T> T get(DebugProperty<T> property) {

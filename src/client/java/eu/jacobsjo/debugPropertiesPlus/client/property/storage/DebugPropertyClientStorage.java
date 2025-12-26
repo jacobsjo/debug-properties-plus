@@ -4,12 +4,11 @@ import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
 import eu.jacobsjo.debugPropertiesPlus.property.storage.DebugPropertyConfigStorage;
 import eu.jacobsjo.debugPropertiesPlus.property.storage.DebugPropertyStorage;
 import eu.jacobsjo.debugPropertiesPlus.property.storage.DebugPropertyWorldStorage;
+import eu.jacobsjo.debugPropertiesPlus.property.storage.NewWorldStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
-import org.jspecify.annotations.Nullable;
 
 public class DebugPropertyClientStorage {
-    private static @Nullable DebugPropertyWorldStorage createNewWorldStorage;
     private static final Minecraft minecraft = Minecraft.getInstance();
 
     private static DebugPropertyStorage getStorage(DebugProperty<?> property){
@@ -18,27 +17,11 @@ public class DebugPropertyClientStorage {
             MinecraftServer server = minecraft.getSingleplayerServer();
             if (server != null){
                 return DebugPropertyWorldStorage.getStorage(server);
-            } else if (createNewWorldStorage != null){
-                return createNewWorldStorage;
+            } else if (NewWorldStorage.getNewWorldStorage() != null){
+                return NewWorldStorage.getNewWorldStorage();
             }
         }
         return DebugPropertyConfigStorage.getInstance();
-    }
-
-    public static void startCreateNewWorld(){
-        createNewWorldStorage = new DebugPropertyWorldStorage(DebugPropertyConfigStorage.getInstance());
-    }
-
-    public static void cancelCreateNewWorld(){
-        createNewWorldStorage = null;
-    }
-    public static void onCreateNewWorld(MinecraftServer server){
-        if (createNewWorldStorage != null) {
-            DebugPropertyWorldStorage.setStorage(server, createNewWorldStorage);
-            createNewWorldStorage = null;
-        } else {
-            DebugPropertyWorldStorage.getStorage(server);
-        }
     }
 
     public static <T> T get(DebugProperty<T> property) {
