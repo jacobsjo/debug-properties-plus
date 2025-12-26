@@ -14,38 +14,38 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class DebugPropertyConfigStorage implements DebugPropertyStorage{
-    private static @Nullable DebugPropertyConfigStorage INSTANCE = null;
+public class ConfigStorage implements DebugPropertyStorage{
+    private static @Nullable ConfigStorage INSTANCE = null;
 
     private static final Codec<DebugPropertyValueMap> VALUE_MAP_CODEC = DebugPropertyValueMap.codec(p -> true);
 
     private final DebugPropertyValueMap valueMap;
     private final @Nullable File file;
 
-    private DebugPropertyConfigStorage(@Nullable File file) {
+    private ConfigStorage(@Nullable File file) {
         this.valueMap = new DebugPropertyValueMap(p -> true);
         this.file = file;
     }
 
-    private DebugPropertyConfigStorage(DebugPropertyValueMap map, @Nullable File file) {
+    private ConfigStorage(DebugPropertyValueMap map, @Nullable File file) {
         this.valueMap = map;
         this.file = file;
         this.updateFile();
     }
 
-    public static DebugPropertyConfigStorage getInstance() {
+    public static ConfigStorage getInstance() {
         if (INSTANCE == null) {
             File file = new File("debug-properties-plus.json");
             try (FileReader fileReader = new FileReader(file)) {
                 JsonElement json = JsonParser.parseReader(fileReader);
                 DebugPropertyValueMap valueMap = VALUE_MAP_CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
-                INSTANCE = new DebugPropertyConfigStorage(valueMap, file);
+                INSTANCE = new ConfigStorage(valueMap, file);
             } catch (IOException e) {
                 // TODO logging: file reading error
-                INSTANCE = new DebugPropertyConfigStorage(file);
+                INSTANCE = new ConfigStorage(file);
             } catch (IllegalStateException e) {
                 // TODO logging: decoding error
-                INSTANCE = new DebugPropertyConfigStorage(file);
+                INSTANCE = new ConfigStorage(file);
             }
         }
         return INSTANCE;

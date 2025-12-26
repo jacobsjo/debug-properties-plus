@@ -3,19 +3,19 @@ package eu.jacobsjo.debugPropertiesPlus.property.storage;
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
 import net.minecraft.server.MinecraftServer;
 
-public class DebugPropertyServerStorage {
+public class ServerStorage {
     private final MinecraftServer server;
 
-    public DebugPropertyServerStorage(MinecraftServer server){
+    public ServerStorage(MinecraftServer server){
         this.server = server;
-        DebugPropertyWorldStorage.getStorage(server);
+        WorldStorage.getStorage(server);
     }
 
     public <T> T get(DebugProperty<T> property) {
         if (property.config.perWorld()) {
-            return DebugPropertyWorldStorage.getStorage(server).get(property);
+            return WorldStorage.getStorage(server).get(property);
         }
-        return DebugPropertyConfigStorage.getInstance().get(property);
+        return ConfigStorage.getInstance().get(property);
     }
 
     public <T> void set(DebugProperty<T> property, T value) {
@@ -24,13 +24,13 @@ public class DebugPropertyServerStorage {
         }
 
         if (property.config.perWorld()) {
-            DebugPropertyWorldStorage.getStorage(server).set(property, value);
+            WorldStorage.getStorage(server).set(property, value);
         }
 
         if (this.server.isDedicatedServer()){
             // only set non-per-world parameters on dedicated server; but then also save per-world parameters in config
             // storage to allow resetting worlds
-            DebugPropertyConfigStorage.getInstance().set(property, value);
+            ConfigStorage.getInstance().set(property, value);
         }
     }
 }

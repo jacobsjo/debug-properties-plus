@@ -9,34 +9,34 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 
 import java.util.Objects;
 
-public class DebugPropertyWorldStorage extends SavedData implements DebugPropertyStorage {
-    private static final Codec<DebugPropertyWorldStorage> CODEC = DebugPropertyValueMap.codec(p -> p.config.perWorld())
-            .xmap(DebugPropertyWorldStorage::new, DebugPropertyWorldStorage::valueMap);
+public class WorldStorage extends SavedData implements DebugPropertyStorage {
+    private static final Codec<WorldStorage> CODEC = DebugPropertyValueMap.codec(p -> p.config.perWorld())
+            .xmap(WorldStorage::new, WorldStorage::valueMap);
 
-    private static final SavedDataType<DebugPropertyWorldStorage> TYPE = new SavedDataType<>(
-            "debug-properties-plus", DebugPropertyWorldStorage::new, CODEC, null
+    private static final SavedDataType<WorldStorage> TYPE = new SavedDataType<>(
+            "debug-properties-plus", WorldStorage::new, CODEC, null
     );
 
-    public static DebugPropertyWorldStorage getStorage(MinecraftServer server){
+    public static WorldStorage getStorage(MinecraftServer server){
         return Objects.requireNonNull(server.getLevel(Level.OVERWORLD)).getDataStorage().computeIfAbsent(TYPE);
     }
 
-    public static void setStorage(MinecraftServer server, DebugPropertyWorldStorage storage){
+    public static void setStorage(MinecraftServer server, WorldStorage storage){
         Objects.requireNonNull(server.getLevel(Level.OVERWORLD)).getDataStorage().set(TYPE, storage);
     }
 
     private final DebugPropertyValueMap valueMap;
 
-    public DebugPropertyWorldStorage() {
+    public WorldStorage() {
         this.valueMap = new DebugPropertyValueMap(p -> p.config.perWorld());
         this.setDirty();
     }
 
-    public DebugPropertyWorldStorage(DebugPropertyStorage defaults) {
+    public WorldStorage(DebugPropertyStorage defaults) {
         this.valueMap = new DebugPropertyValueMap(defaults, p -> p.config.perWorld());
     }
 
-    private DebugPropertyWorldStorage(DebugPropertyValueMap map) {
+    private WorldStorage(DebugPropertyValueMap map) {
         this.valueMap = map;
         this.setDirty();
     }

@@ -1,14 +1,14 @@
 package eu.jacobsjo.debugPropertiesPlus.client.property.storage;
 
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
-import eu.jacobsjo.debugPropertiesPlus.property.storage.DebugPropertyConfigStorage;
+import eu.jacobsjo.debugPropertiesPlus.property.storage.ConfigStorage;
 import eu.jacobsjo.debugPropertiesPlus.property.storage.DebugPropertyStorage;
-import eu.jacobsjo.debugPropertiesPlus.property.storage.DebugPropertyWorldStorage;
+import eu.jacobsjo.debugPropertiesPlus.property.storage.WorldStorage;
 import eu.jacobsjo.debugPropertiesPlus.property.storage.NewWorldStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 
-public class DebugPropertyClientStorage {
+public class ClientStorage {
     private static final Minecraft minecraft = Minecraft.getInstance();
 
     private static DebugPropertyStorage getStorage(DebugProperty<?> property){
@@ -16,12 +16,12 @@ public class DebugPropertyClientStorage {
         if (property.config.perWorld()) {
             MinecraftServer server = minecraft.getSingleplayerServer();
             if (server != null){
-                return DebugPropertyWorldStorage.getStorage(server);
+                return WorldStorage.getStorage(server);
             } else if (NewWorldStorage.getNewWorldStorage() != null){
                 return NewWorldStorage.getNewWorldStorage();
             }
         }
-        return DebugPropertyConfigStorage.getInstance();
+        return ConfigStorage.getInstance();
     }
 
     public static <T> T get(DebugProperty<T> property) {

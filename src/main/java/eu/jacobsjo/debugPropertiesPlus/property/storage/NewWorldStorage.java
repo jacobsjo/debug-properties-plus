@@ -4,10 +4,10 @@ import net.minecraft.server.MinecraftServer;
 import org.jspecify.annotations.Nullable;
 
 public class NewWorldStorage {
-    private static @Nullable DebugPropertyWorldStorage newWorldStorage;
+    private static @Nullable WorldStorage newWorldStorage;
 
     public static void startCreateNewWorld(){
-        newWorldStorage = new DebugPropertyWorldStorage(DebugPropertyConfigStorage.getInstance());
+        newWorldStorage = new WorldStorage(ConfigStorage.getInstance());
     }
 
     public static void cancelCreateNewWorld(){
@@ -16,14 +16,14 @@ public class NewWorldStorage {
 
     public static void onWorldLoad(MinecraftServer server){
         if (newWorldStorage != null) {
-            DebugPropertyWorldStorage.setStorage(server, newWorldStorage);
+            WorldStorage.setStorage(server, newWorldStorage);
             newWorldStorage = null;
         } else {
-            DebugPropertyWorldStorage.getStorage(server);
+            WorldStorage.getStorage(server);
         }
     }
 
-    public static @Nullable DebugPropertyWorldStorage getNewWorldStorage(){
+    public static @Nullable WorldStorage getNewWorldStorage(){
         return newWorldStorage;
     }
 }
