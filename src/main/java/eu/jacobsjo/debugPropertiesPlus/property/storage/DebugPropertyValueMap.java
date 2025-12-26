@@ -76,11 +76,10 @@ public class DebugPropertyValueMap {
     }
 
     private void setDebugPropertiesFromStore(){
-        DebugProperty.PROPERTIES.values().stream().filter(this.predicate).forEach(p -> {
-            p.set(get(p));
-        });
+        DebugProperty.PROPERTIES.values().stream().filter(this.predicate).forEach(this::accept);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T get(DebugProperty<T> property) {
         return (T) values.getOrDefault(property, property.defaultValue);
     }
@@ -92,5 +91,9 @@ public class DebugPropertyValueMap {
             values.put(property, value);
         }
         property.set(value);
+    }
+
+    private void accept(DebugProperty<?> p) {
+        p.set(get(p));
     }
 }

@@ -14,7 +14,7 @@ import net.minecraft.resources.Identifier;
 public record DebugPropertyUpdatePayload<T>(DebugProperty<T> property, T newValue) implements CustomPacketPayload {
     public static final Identifier DEBUG_PROPERTY_UPDATE_PAYLOAD_ID = Identifier.fromNamespaceAndPath(DebugPropertiesPlus.MOD_ID, "debug_property_update");
     public static final Type<DebugPropertyUpdatePayload<?>> ID = new Type<>(DEBUG_PROPERTY_UPDATE_PAYLOAD_ID);
-    public static final StreamCodec<FriendlyByteBuf, DebugPropertyUpdatePayload<?>> STREAM_CODEC = new StreamCodec<FriendlyByteBuf, DebugPropertyUpdatePayload<?>>() {
+    public static final StreamCodec<FriendlyByteBuf, DebugPropertyUpdatePayload<?>> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public DebugPropertyUpdatePayload<?> decode(FriendlyByteBuf byteBuf) {
             DebugProperty<?> property = DebugProperty.BY_NAME_STREAM_CODEC.decode(byteBuf);
