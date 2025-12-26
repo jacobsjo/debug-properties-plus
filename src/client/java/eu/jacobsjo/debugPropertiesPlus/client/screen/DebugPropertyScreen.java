@@ -135,8 +135,10 @@ public class DebugPropertyScreen extends Screen {
                     }
 
                     if (property.type == Boolean.class) {
+                        //noinspection unchecked
                         this.addEntry(new BooleanPropertyEntry((DebugProperty<Boolean>) property));
                     } else if (property.type == Integer.class) {
+                        //noinspection unchecked
                         this.addEntry(new IntegerPropertyEntry((DebugProperty<Integer>) property));
                     }
                 }
@@ -186,7 +188,7 @@ public class DebugPropertyScreen extends Screen {
     private abstract class PropertyEntry<T> extends AbstractPropertyEntry {
         final DebugProperty<T> property;
 
-        protected final List<AbstractWidget> children = Lists.<AbstractWidget>newArrayList();
+        protected final List<AbstractWidget> children = Lists.newArrayList();
         private final LinearLayout nameLayout;
 
         public PropertyEntry(final DebugProperty<T> property) {
@@ -264,6 +266,7 @@ public class DebugPropertyScreen extends Screen {
         public void refreshEntry() {
             boolean value = ClientStorage.get(this.property);
             if (this.checkbox.selected() != value){
+                //noinspection DataFlowIssue
                 this.checkbox.onPress(null);
             }
         }

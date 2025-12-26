@@ -29,8 +29,6 @@ public class DebugPropertiesPlus implements ModInitializer {
             serverStorage = new ServerStorage(server);
         });
 
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            DebugPropertyCommand.register(dispatcher, environment);
-        });
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> DebugPropertyCommand.register(dispatcher, environment));
     }
 }
