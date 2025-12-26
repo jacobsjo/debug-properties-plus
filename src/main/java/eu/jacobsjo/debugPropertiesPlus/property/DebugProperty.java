@@ -5,7 +5,10 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.SharedConstants;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +19,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
 
     public final Class<T> type;
     public final Codec<T> valueCodec;
+    public final StreamCodec<ByteBuf, T> valueStreamCodec;
     public final ArgumentType<T> argument;
     public final String name;
     public final DebugPropertyConfig config;
@@ -26,6 +30,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
     private DebugProperty(
         Class<T> type,
         Codec<T> valueCodec,
+        StreamCodec<ByteBuf, T> valueStreamCodec,
         ArgumentType<T> argument,
         String name,
         DebugPropertyConfig config,
@@ -35,6 +40,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
     ){
         this.type = type;
         this.valueCodec = valueCodec;
+        this.valueStreamCodec = valueStreamCodec;
         this.argument = argument;
         this.name = name;
         this.config = config;
@@ -65,6 +71,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
 
 
     public static final Codec<DebugProperty<?>> BY_NAME_CODEC = Codec.STRING.xmap(PROPERTIES::get, DebugProperty::name);
+    public static final StreamCodec<ByteBuf, DebugProperty<?>> BY_NAME_STREAM_CODEC = ByteBufCodecs.stringUtf8(64).map(PROPERTIES::get, DebugProperty::name);
 
     private String name() {
         return this.name;
@@ -73,6 +80,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
     private static <T> void create(
             Class<T> type,
             Codec<T> valueCodec,
+            StreamCodec<ByteBuf, T> valueStreamCodec,
             ArgumentType<T> argument,
             String name,
             DebugPropertyConfig config,
@@ -80,7 +88,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
             Consumer<T> setter,
             T defaultValue
     ){
-        PROPERTIES.put(name, new DebugProperty<>(type, valueCodec, argument, name, config, getter, setter, defaultValue));
+        PROPERTIES.put(name, new DebugProperty<>(type, valueCodec, valueStreamCodec, argument, name, config, getter, setter, defaultValue));
     }
 
     private static void createBoolean(
@@ -89,7 +97,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
             Supplier<Boolean> getter,
             Consumer<Boolean> setter
     ){
-        create(Boolean.class, Codec.BOOL, BoolArgumentType.bool(), name, config, getter, setter, false);
+        create(Boolean.class, Codec.BOOL, ByteBufCodecs.BOOL, BoolArgumentType.bool(), name, config, getter, setter, false);
     }
 
     private static void createInteger(
@@ -98,7 +106,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
             Supplier<Integer> getter,
             Consumer<Integer> setter
     ){
-        create(Integer.class, Codec.INT, IntegerArgumentType.integer(), name, config, getter, setter, 0);
+        create(Integer.class, Codec.INT, ByteBufCodecs.INT, IntegerArgumentType.integer(), name, config, getter, setter, 0);
     }
 
     private static final DebugPropertyConfig CLIENT = new DebugPropertyConfig.Builder().build();

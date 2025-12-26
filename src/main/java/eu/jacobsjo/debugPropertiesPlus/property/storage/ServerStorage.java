@@ -1,6 +1,10 @@
 package eu.jacobsjo.debugPropertiesPlus.property.storage;
 
+import eu.jacobsjo.debugPropertiesPlus.networking.ClientboundDebugPropertyPayload;
+import eu.jacobsjo.debugPropertiesPlus.networking.DebugPropertyUpdatePayload;
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
 
 public class ServerStorage {
@@ -32,5 +36,21 @@ public class ServerStorage {
             // storage to allow resetting worlds
             ConfigStorage.getInstance().set(property, value);
         }
+
+        DebugPropertyUpdatePayload<T> payload = new DebugPropertyUpdatePayload<>(property, value);
+
+        PlayerLookup.all(this.server).stream()
+                .filter(player -> !player.isLocalPlayer())
+                .forEach(player -> ServerPlayNetworking.send(player, payload) );
+    }
+
+    public ClientboundDebugPropertyPayload getPayload(){
+        DebugPropertyValueMap valueMap = new DebugPropertyValueMap(p -> p.config.onDedicatedServer());
+        DebugProperty.PROPERTIES.values().stream().filter(p -> p.config.onDedicatedServer()).forEach(p -> this.getAndSet(valueMap, p));
+        return new ClientboundDebugPropertyPayload(valueMap);
+    }
+
+    private <T> void getAndSet(DebugPropertyValueMap valueMap, DebugProperty<T> debugProperty){
+        valueMap.set(debugProperty, get(debugProperty));
     }
 }

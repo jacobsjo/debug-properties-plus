@@ -3,7 +3,10 @@ package eu.jacobsjo.debugPropertiesPlus.property.storage;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 import java.util.Map;
 import java.util.function.Predicate;
@@ -15,6 +18,8 @@ public class DebugPropertyValueMap {
                 p -> p.valueCodec
         ).xmap(map -> new DebugPropertyValueMap(map, predicate), ps -> ps.values);
     }
+
+    public static StreamCodec<ByteBuf, DebugPropertyValueMap> STREAM_CODEC = ByteBufCodecs.fromCodec(codec(p -> true));
 
     private final Predicate<DebugProperty<?>> predicate;
     private final Map<DebugProperty<?>, Object> values;
