@@ -13,12 +13,16 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.SharedConstants;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DebugPropertiesPlus implements ModInitializer {
     public static @Nullable ServerStorage serverStorage;
     public static String MOD_ID = "debug-properties-plus";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     @Override
     public void onInitialize() {
@@ -45,6 +49,11 @@ public class DebugPropertiesPlus implements ModInitializer {
             if (listener.getOwner() == server.getSingleplayerProfile()) return;
             assert serverStorage != null;
             ServerConfigurationNetworking.send(listener, serverStorage.getPayload());
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(DebugPropertyUpdatePayload.ID, (payload, context) -> {
+            assert serverStorage != null;
+            serverStorage.handlePayload(payload, context);
         });
     }
 

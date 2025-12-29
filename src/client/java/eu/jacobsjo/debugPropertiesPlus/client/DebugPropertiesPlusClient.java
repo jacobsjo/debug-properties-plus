@@ -1,9 +1,14 @@
 package eu.jacobsjo.debugPropertiesPlus.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import eu.jacobsjo.debugPropertiesPlus.client.property.storage.ClientStorage;
+import eu.jacobsjo.debugPropertiesPlus.networking.ClientboundDebugPropertyPayload;
+import eu.jacobsjo.debugPropertiesPlus.networking.DebugPropertyUpdatePayload;
 import eu.jacobsjo.debugPropertiesPlus.property.storage.NewWorldStorage;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.client.KeyMapping;
 import org.jspecify.annotations.Nullable;
@@ -23,5 +28,7 @@ public class DebugPropertiesPlusClient implements ClientModInitializer {
 
         ServerWorldEvents.LOAD.register((server, level) -> NewWorldStorage.onWorldLoad(server));
 
+        ClientPlayNetworking.registerGlobalReceiver(DebugPropertyUpdatePayload.ID, ClientStorage::handlePayload);
+        ClientConfigurationNetworking.registerGlobalReceiver(ClientboundDebugPropertyPayload.ID, ClientStorage::handlePayload);
     }
 }

@@ -1,8 +1,10 @@
 package eu.jacobsjo.debugPropertiesPlus.client.screen;
 
 import com.google.common.collect.Lists;
+import eu.jacobsjo.debugPropertiesPlus.client.ToggleableCheckbox;
 import eu.jacobsjo.debugPropertiesPlus.client.property.storage.ClientStorage;
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
@@ -13,6 +15,7 @@ import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.layouts.SpacerElement;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -25,16 +28,21 @@ import java.util.Locale;
 public class DebugPropertyScreen extends Screen {
     private static final Component TITLE = Component.translatable("debug-properties-plus.screen.title");
     private static final Component SUBTITLE = Component.translatable("debug-properties-plus.screen.warning").withColor(0xFFFF0000);
-    private static final Component PER_WORLD_HEADER = Component.translatable("debug-properties-plus.screen.header.perWorld").withColor(0xFFFFF060);
-    private static final Component PER_WORLD_DEFAULT_HEADER = Component.translatable("debug-properties-plus.screen.header.perWorld.default").withColor(0xFFFFF060);
+    private static final Component PER_WORLD_HEADER = Component.translatable("debug-properties-plus.screen.header.perWorld").withColor(0xFFFFF060).withStyle(ChatFormatting.BOLD);
+    private static final Component PER_WORLD_DEFAULT_HEADER = Component.translatable("debug-properties-plus.screen.header.perWorld.default").withColor(0xFFFFF060).withStyle(ChatFormatting.BOLD);
     private static final Component GLOBAL_HEADER = Component.translatable("debug-properties-plus.screen.header.global").withColor(0xFFFFF060);
     private static final Component WARNING_REQUIRES_OP = Component.translatable("debug-properties-plus.screen.warning.requires-op").withColor(0xFFFFF060);
     private static final Component WARNING_SINGLEPLAYER = Component.translatable("debug-properties-plus.screen.warning.singleplayer").withColor(0xFFFFF060);
+    private static final Component DISABLED_LAN = Component.translatable("debug-properties-plus.screen.disabled.lan").withColor(0xFFFF3030);
+    private static final Component DISABLED_NO_PERMISSION = Component.translatable("debug-properties-plus.screen.disabled.requires-op").withColor(0xFFFF3030);
+    private static final Component SET_ON_SERVER = Component.translatable("debug-properties-plus.screen.info.set-on-server").withColor(0xFF3030FF);
     private static final Identifier WARNING_SPRITE = Identifier.fromNamespaceAndPath("debug-properties-plus","warning");
+    private static final Identifier DISABLED_SPRITE = Identifier.fromNamespaceAndPath("debug-properties-plus","error");
+    private static final Identifier RIGHT_ARROW_SPRITE = Identifier.fromNamespaceAndPath("debug-properties-plus","right_arrow");
 
     private static final Component SEARCH = Component.translatable("debug.options.search").withStyle(EditBox.SEARCH_HINT_STYLE);
 
-    private static final int WIDTH = 350;
+    private static final int WIDTH = 400;
 
     final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 61, 33);
     private DebugPropertyScreen.@Nullable PropertyList propertyList;
@@ -191,6 +199,8 @@ public class DebugPropertyScreen extends Screen {
         protected final List<AbstractWidget> children = Lists.newArrayList();
         private final LinearLayout nameLayout;
 
+        protected boolean enabled = true;
+
         public PropertyEntry(final DebugProperty<T> property) {
             this.property = property;
 
@@ -198,22 +208,48 @@ public class DebugPropertyScreen extends Screen {
             nameLayout.addChild(new SpacerElement(0, 16));
             nameLayout.addChild(new StringWidget(Component.literal(this.property.name), DebugPropertyScreen.this.minecraft.font), nameLayout.newCellSettings().alignVerticallyMiddle() );
 
-            Component warning = null;
-            if (DebugPropertyScreen.this.minecraft.player != null) {
-                if (property.config.requiresOp() && !DebugPropertyScreen.this.minecraft.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
-                    warning = WARNING_REQUIRES_OP;
-                } else if (property.config.notOnMultiplayer() && !DebugPropertyScreen.this.minecraft.player.isLocalPlayer()){
-                    warning = WARNING_SINGLEPLAYER;
+            Identifier infoSprite = null;
+            Component infoText = null;
+
+            Minecraft minecraft = DebugPropertyScreen.this.minecraft;
+
+            if (minecraft.player != null) {
+                ServerData serverData = minecraft.player.connection.getServerData();
+
+                if (property.config.requiresOp() && !minecraft.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
+                    infoSprite = WARNING_SPRITE;
+                    infoText = WARNING_REQUIRES_OP;
+                } else if (property.config.notOnMultiplayer() && !minecraft.isLocalServer()){
+                    infoSprite = WARNING_SPRITE;
+                    infoText = WARNING_SINGLEPLAYER;
+                }
+
+                if (!minecraft.isLocalServer() && property.config.onDedicatedServer()){
+
+                    if (serverData != null && serverData.isLan() && !property.config.perWorld()){
+                        enabled = false;
+                        infoSprite = DISABLED_SPRITE;
+                        infoText = DISABLED_LAN;
+                    } else if (!minecraft.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)){
+                        enabled = false;
+                        infoSprite = DISABLED_SPRITE;
+                        infoText = DISABLED_NO_PERMISSION;
+                    } else if (!property.config.perWorld()){
+                        infoSprite = RIGHT_ARROW_SPRITE;
+                        infoText = SET_ON_SERVER;
+                    }
                 }
             }
 
-            if (warning != null){
-                nameLayout.addChild(ImageWidget.sprite(16, 16, WARNING_SPRITE));
-                nameLayout.addChild(new StringWidget(warning, DebugPropertyScreen.this.minecraft.font), nameLayout.newCellSettings().alignVerticallyMiddle() );
+            if (infoSprite != null) {
+                nameLayout.addChild(ImageWidget.sprite(16, 16, infoSprite));
+            }
+
+            if (infoText != null){
+                nameLayout.addChild(new StringWidget(infoText, DebugPropertyScreen.this.minecraft.font), nameLayout.newCellSettings().alignVerticallyMiddle() );
             }
             nameLayout.visitWidgets(this.children::add);
         }
-
 
         @Override
         public List<? extends GuiEventListener> children() {
@@ -250,6 +286,9 @@ public class DebugPropertyScreen extends Screen {
                     .selected(ClientStorage.get(property))
                     .onValueChange((cb, v) -> ClientStorage.set(property, v))
                     .build();
+
+            ((ToggleableCheckbox) this.checkbox).debug_properties_plus$setEnabled(this.enabled);
+
             this.children.add(this.checkbox);
             this.refreshEntry();
         }
@@ -265,10 +304,7 @@ public class DebugPropertyScreen extends Screen {
 
         public void refreshEntry() {
             boolean value = ClientStorage.get(this.property);
-            if (this.checkbox.selected() != value){
-                //noinspection DataFlowIssue
-                this.checkbox.onPress(null);
-            }
+            ((ToggleableCheckbox) this.checkbox).debug_properties_plus$setValue(value);
         }
     }
 
@@ -280,6 +316,7 @@ public class DebugPropertyScreen extends Screen {
 
             this.editbox = new EditBox(DebugPropertyScreen.super.font, 40, 16, Component.literal(property.name));
             this.editbox.setValue(ClientStorage.get(property).toString());
+            this.editbox.setEditable(this.enabled);
             this.editbox.setResponder(v -> {
                 try {
                     int value = Integer.parseInt(v);

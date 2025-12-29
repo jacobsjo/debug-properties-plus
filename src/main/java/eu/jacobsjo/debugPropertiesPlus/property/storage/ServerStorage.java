@@ -1,11 +1,13 @@
 package eu.jacobsjo.debugPropertiesPlus.property.storage;
 
+import eu.jacobsjo.debugPropertiesPlus.DebugPropertiesPlus;
 import eu.jacobsjo.debugPropertiesPlus.networking.ClientboundDebugPropertyPayload;
 import eu.jacobsjo.debugPropertiesPlus.networking.DebugPropertyUpdatePayload;
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.permissions.Permissions;
 
 public class ServerStorage {
     private final MinecraftServer server;
@@ -52,5 +54,17 @@ public class ServerStorage {
 
     private <T> void getAndSet(DebugPropertyValueMap valueMap, DebugProperty<T> debugProperty){
         valueMap.set(debugProperty, get(debugProperty));
+    }
+
+    public <T> void handlePayload(DebugPropertyUpdatePayload<T> payload, ServerPlayNetworking.Context context){
+        if (!context.server().isDedicatedServer() && !payload.property().config.perWorld()){
+            DebugPropertiesPlus.LOGGER.warn("Received non-per-world debug properties update payload on integrated server; ignoring. Source: {}", context.player().nameAndId());
+            return;
+        }
+        if (!context.player().permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)){
+            DebugPropertiesPlus.LOGGER.warn("Received debug properties update from non-op player {}; ignoring.", context.player().nameAndId());
+            return;
+        }
+        set(payload.property(), payload.newValue());
     }
 }
