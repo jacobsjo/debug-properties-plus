@@ -75,4 +75,8 @@ public class ConfigStorage implements DebugPropertyStorage{
         this.updateFile();
     }
 
+    public void updateLocalDebugProperties() {
+        this.valueMap.updateDebugPropertiesFromMap();
+    }
+
 }

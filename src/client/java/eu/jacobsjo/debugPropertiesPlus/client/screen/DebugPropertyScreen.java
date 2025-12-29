@@ -2,7 +2,7 @@ package eu.jacobsjo.debugPropertiesPlus.client.screen;
 
 import com.google.common.collect.Lists;
 import eu.jacobsjo.debugPropertiesPlus.client.ToggleableCheckbox;
-import eu.jacobsjo.debugPropertiesPlus.client.property.storage.ClientStorage;
+import eu.jacobsjo.debugPropertiesPlus.client.property.ClientStorageManager;
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -283,8 +283,8 @@ public class DebugPropertyScreen extends Screen {
 
             this.checkbox = Checkbox.builder(message, DebugPropertyScreen.this.font)
                     .maxWidth(60)
-                    .selected(ClientStorage.get(property))
-                    .onValueChange((cb, v) -> ClientStorage.set(property, v))
+                    .selected(ClientStorageManager.get(property))
+                    .onValueChange((cb, v) -> ClientStorageManager.set(property, v))
                     .build();
 
             ((ToggleableCheckbox) this.checkbox).debug_properties_plus$setEnabled(this.enabled);
@@ -303,7 +303,7 @@ public class DebugPropertyScreen extends Screen {
         }
 
         public void refreshEntry() {
-            boolean value = ClientStorage.get(this.property);
+            boolean value = ClientStorageManager.get(this.property);
             ((ToggleableCheckbox) this.checkbox).debug_properties_plus$setValue(value);
         }
     }
@@ -315,13 +315,13 @@ public class DebugPropertyScreen extends Screen {
             super(property);
 
             this.editbox = new EditBox(DebugPropertyScreen.super.font, 40, 16, Component.literal(property.name));
-            this.editbox.setValue(ClientStorage.get(property).toString());
+            this.editbox.setValue(ClientStorageManager.get(property).toString());
             this.editbox.setEditable(this.enabled);
             this.editbox.setResponder(v -> {
                 try {
                     int value = Integer.parseInt(v);
                     this.editbox.setTextColor(-2039584);
-                    ClientStorage.set(property, value);
+                    ClientStorageManager.set(property, value);
                 } catch (NumberFormatException e) {
                     this.editbox.setTextColor(-65536);
                 }
@@ -341,7 +341,7 @@ public class DebugPropertyScreen extends Screen {
         }
 
         public void refreshEntry() {
-            this.editbox.setValue(ClientStorage.get(this.property).toString());
+            this.editbox.setValue(ClientStorageManager.get(this.property).toString());
         }
     }
 }

@@ -1,7 +1,7 @@
 package eu.jacobsjo.debugPropertiesPlus.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import eu.jacobsjo.debugPropertiesPlus.client.property.storage.ClientStorage;
+import eu.jacobsjo.debugPropertiesPlus.client.property.ClientStorageManager;
 import eu.jacobsjo.debugPropertiesPlus.networking.ClientboundDebugPropertyPayload;
 import eu.jacobsjo.debugPropertiesPlus.networking.DebugPropertyUpdatePayload;
 import eu.jacobsjo.debugPropertiesPlus.property.storage.NewWorldStorage;
@@ -28,7 +28,7 @@ public class DebugPropertiesPlusClient implements ClientModInitializer {
 
         ServerWorldEvents.LOAD.register((server, level) -> NewWorldStorage.onWorldLoad(server));
 
-        ClientPlayNetworking.registerGlobalReceiver(DebugPropertyUpdatePayload.ID, ClientStorage::handlePayload);
-        ClientConfigurationNetworking.registerGlobalReceiver(ClientboundDebugPropertyPayload.ID, ClientStorage::handlePayload);
+        ClientPlayNetworking.registerGlobalReceiver(DebugPropertyUpdatePayload.ID, ClientStorageManager::handlePayload);
+        ClientConfigurationNetworking.registerGlobalReceiver(ClientboundDebugPropertyPayload.ID, ClientStorageManager::handlePayload);
     }
 }

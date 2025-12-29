@@ -4,9 +4,8 @@ import eu.jacobsjo.debugPropertiesPlus.command.DebugPropertyCommand;
 import eu.jacobsjo.debugPropertiesPlus.networking.ClientboundDebugPropertyPayload;
 import eu.jacobsjo.debugPropertiesPlus.networking.DebugPropertyUpdatePayload;
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
+import eu.jacobsjo.debugPropertiesPlus.property.ServerStorageManager;
 import eu.jacobsjo.debugPropertiesPlus.property.storage.ConfigStorage;
-import eu.jacobsjo.debugPropertiesPlus.property.storage.ServerStorage;
-import eu.jacobsjo.debugPropertiesPlus.property.storage.WorldStorage;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
@@ -20,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DebugPropertiesPlus implements ModInitializer {
-    public static @Nullable ServerStorage serverStorage;
+    public static @Nullable ServerStorageManager serverStorage;
     public static String MOD_ID = "debug-properties-plus";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
@@ -28,15 +27,10 @@ public class DebugPropertiesPlus implements ModInitializer {
     public void onInitialize() {
         SharedConstants.DEBUG_ENABLED = true;
         DebugProperty.bootstrap();
-        ConfigStorage.getInstance();
+        ConfigStorage.getInstance().updateLocalDebugProperties();
 
-        // initalize per world storage, so it sets the debug properties
         ServerWorldEvents.LOAD.register((server, level) -> {
-            if (server.isDedicatedServer()) {
-                WorldStorage.getStorage(server);
-            }
-
-            serverStorage = new ServerStorage(server);
+            serverStorage = new ServerStorageManager(server);
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> DebugPropertyCommand.register(dispatcher, environment));
@@ -48,12 +42,12 @@ public class DebugPropertiesPlus implements ModInitializer {
         ServerConfigurationConnectionEvents.CONFIGURE.register((listener, server) -> {
             if (listener.getOwner() == server.getSingleplayerProfile()) return;
             assert serverStorage != null;
-            ServerConfigurationNetworking.send(listener, serverStorage.getPayload());
+            ServerConfigurationNetworking.send(listener, serverStorage.createClientboundPayload());
         });
 
         ServerPlayNetworking.registerGlobalReceiver(DebugPropertyUpdatePayload.ID, (payload, context) -> {
             assert serverStorage != null;
-            serverStorage.handlePayload(payload, context);
+            serverStorage.handleUpdatePayload(payload, context);
         });
     }
 

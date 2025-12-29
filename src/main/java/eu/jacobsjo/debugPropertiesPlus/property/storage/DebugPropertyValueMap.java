@@ -27,8 +27,6 @@ public class DebugPropertyValueMap {
     public DebugPropertyValueMap(Map<DebugProperty<?>, Object> values, Predicate<DebugProperty<?>> predicate){
         this.values = new Reference2ObjectOpenHashMap<>(values);
         this.predicate = predicate;
-        this.setStoreFromDebugProperties();
-        this.setDebugPropertiesFromStore();
     }
 
     DebugPropertyValueMap(DebugPropertyStorage defaults, Predicate<DebugProperty<?>> predicate){
@@ -40,43 +38,11 @@ public class DebugPropertyValueMap {
             }
         });
         this.predicate = predicate;
-        this.setStoreFromDebugProperties();
-        this.setDebugPropertiesFromStore();
     }
 
-    DebugPropertyValueMap(Predicate<DebugProperty<?>> predicate){
+    public DebugPropertyValueMap(Predicate<DebugProperty<?>> predicate){
         this.values = new Reference2ObjectOpenHashMap<>();
         this.predicate = predicate;
-        this.setStoreFromDebugProperties();
-        this.setDebugPropertiesFromStore();
-    }
-
-    private void setStoreFromDebugProperties(){
-        DebugProperty.PROPERTIES.values().stream().filter(this.predicate).forEach(p -> {
-            String propertyString = System.getProperty("MC_DEBUG_" + p.name);
-            if (propertyString == null) return;
-            if (p.type == Boolean.class){
-                boolean value = propertyString.isEmpty() || Boolean.parseBoolean(propertyString);
-                if (!p.defaultValue.equals(value)){
-                    values.put(p, value);
-                }
-            } else if (p.type == Integer.class){
-                try {
-                    int intValue = Integer.parseInt(propertyString);
-                    if (!p.defaultValue.equals(intValue)){
-                        values.put(p, true);
-                    }
-                } catch (NumberFormatException e) {
-                    // TODO logging
-                }
-            } else {
-                throw new IllegalStateException("Can't handle property type " + p.type.getName());
-            }
-        });
-    }
-
-    private void setDebugPropertiesFromStore(){
-        DebugProperty.PROPERTIES.values().stream().filter(this.predicate).forEach(this::accept);
     }
 
     @SuppressWarnings("unchecked")
@@ -90,10 +56,13 @@ public class DebugPropertyValueMap {
         } else {
             values.put(property, value);
         }
-        property.set(value);
     }
 
-    private void accept(DebugProperty<?> p) {
+    public void updateDebugPropertiesFromMap(){
+        DebugProperty.PROPERTIES.values().stream().filter(this.predicate).forEach(this::updateDebugPropertyFromMap);
+    }
+
+    private void updateDebugPropertyFromMap(DebugProperty<?> p) {
         p.set(get(p));
     }
 }

@@ -1,5 +1,6 @@
-package eu.jacobsjo.debugPropertiesPlus.client.property.storage;
+package eu.jacobsjo.debugPropertiesPlus.client.property;
 
+import eu.jacobsjo.debugPropertiesPlus.client.property.storage.RemoteServerStorage;
 import eu.jacobsjo.debugPropertiesPlus.networking.ClientboundDebugPropertyPayload;
 import eu.jacobsjo.debugPropertiesPlus.networking.DebugPropertyUpdatePayload;
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
@@ -15,7 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import org.jspecify.annotations.Nullable;
 
-public class ClientStorage {
+public class ClientStorageManager {
     private static final Minecraft minecraft = Minecraft.getInstance();
     private static @Nullable RemoteServerStorage remoteServerStorage;
 
@@ -46,12 +47,18 @@ public class ClientStorage {
             storage.set(property, value);
         }
 
+        // if not setting on a remove server, update local property
+        if (storage != remoteServerStorage){
+            property.set(value);
+        }
+
+        // update debug renderers if necessary
         if (property.config.updateDebugRenderer()){
             minecraft.debugEntries.rebuildCurrentList();
         }
 
+        // on lan, send update to everyone else
         MinecraftServer server = minecraft.getSingleplayerServer();
-
         if (server != null && !server.isSingleplayer()){
             DebugPropertyUpdatePayload<T> payload = new DebugPropertyUpdatePayload<>(property, value);
 

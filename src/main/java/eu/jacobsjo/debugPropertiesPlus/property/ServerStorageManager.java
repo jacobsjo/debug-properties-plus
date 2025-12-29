@@ -1,20 +1,23 @@
-package eu.jacobsjo.debugPropertiesPlus.property.storage;
+package eu.jacobsjo.debugPropertiesPlus.property;
 
 import eu.jacobsjo.debugPropertiesPlus.DebugPropertiesPlus;
 import eu.jacobsjo.debugPropertiesPlus.networking.ClientboundDebugPropertyPayload;
 import eu.jacobsjo.debugPropertiesPlus.networking.DebugPropertyUpdatePayload;
-import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
+import eu.jacobsjo.debugPropertiesPlus.property.storage.ConfigStorage;
+import eu.jacobsjo.debugPropertiesPlus.property.storage.DebugPropertyValueMap;
+import eu.jacobsjo.debugPropertiesPlus.property.storage.WorldStorage;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.permissions.Permissions;
 
-public class ServerStorage {
+public class ServerStorageManager {
     private final MinecraftServer server;
 
-    public ServerStorage(MinecraftServer server){
+    public ServerStorageManager(MinecraftServer server){
         this.server = server;
-        WorldStorage.getStorage(server);
+        WorldStorage.getStorage(server).updateLocalDebugProperties();
     }
 
     public <T> T get(DebugProperty<T> property) {
@@ -39,30 +42,35 @@ public class ServerStorage {
             ConfigStorage.getInstance().set(property, value);
         }
 
-        DebugPropertyUpdatePayload<T> payload = new DebugPropertyUpdatePayload<>(property, value);
+        // update local property
+        property.set(value);
 
+        // send update payload
+        DebugPropertyUpdatePayload<T> payload = new DebugPropertyUpdatePayload<>(property, value);
         PlayerLookup.all(this.server).stream()
                 .filter(player -> !player.isLocalPlayer())
                 .forEach(player -> ServerPlayNetworking.send(player, payload) );
     }
 
-    public ClientboundDebugPropertyPayload getPayload(){
+    public ClientboundDebugPropertyPayload createClientboundPayload(){
         DebugPropertyValueMap valueMap = new DebugPropertyValueMap(p -> p.config.onDedicatedServer());
-        DebugProperty.PROPERTIES.values().stream().filter(p -> p.config.onDedicatedServer()).forEach(p -> this.getAndSet(valueMap, p));
+        DebugProperty.PROPERTIES.values().stream().filter(p -> p.config.onDedicatedServer()).forEach(p -> this.setValueMapFromManager(valueMap, p));
         return new ClientboundDebugPropertyPayload(valueMap);
     }
 
-    private <T> void getAndSet(DebugPropertyValueMap valueMap, DebugProperty<T> debugProperty){
+    private <T> void setValueMapFromManager(DebugPropertyValueMap valueMap, DebugProperty<T> debugProperty){
         valueMap.set(debugProperty, get(debugProperty));
     }
 
-    public <T> void handlePayload(DebugPropertyUpdatePayload<T> payload, ServerPlayNetworking.Context context){
+    public <T> void handleUpdatePayload(DebugPropertyUpdatePayload<T> payload, ServerPlayNetworking.Context context){
         if (!context.server().isDedicatedServer() && !payload.property().config.perWorld()){
             DebugPropertiesPlus.LOGGER.warn("Received non-per-world debug properties update payload on integrated server; ignoring. Source: {}", context.player().nameAndId());
+            context.responseSender().disconnect(Component.literal("Illagal payload: Trying to set non-per-world property on LAN server"));
             return;
         }
         if (!context.player().permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)){
             DebugPropertiesPlus.LOGGER.warn("Received debug properties update from non-op player {}; ignoring.", context.player().nameAndId());
+            context.responseSender().disconnect(Component.literal("Illagal payload: Trying to set property with insufficient permissions."));
             return;
         }
         set(payload.property(), payload.newValue());

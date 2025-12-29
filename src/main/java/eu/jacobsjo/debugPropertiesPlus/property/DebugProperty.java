@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import eu.jacobsjo.debugPropertiesPlus.DebugPropertiesPlus;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -49,6 +50,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
         if (!this.type.isInstance(value)){
             throw new IllegalArgumentException("Trying to set value of wrong type");
         }
+        DebugPropertiesPlus.LOGGER.info("Set debug property {} to {}", this.name, value);
         //noinspection unchecked
         this.setter.accept((T) value);
     }
@@ -88,7 +90,10 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
             DebugPropertyConfig config,
             Consumer<Boolean> setter
     ){
-        create(Boolean.class, Codec.BOOL, ByteBufCodecs.BOOL, BoolArgumentType.bool(), name, config, setter, false);
+        String propertyString = System.getProperty("MC_DEBUG_" + name);
+        boolean defaulValue = propertyString != null && (propertyString.isEmpty() || Boolean.parseBoolean(propertyString));
+
+        create(Boolean.class, Codec.BOOL, ByteBufCodecs.BOOL, BoolArgumentType.bool(), name, config, setter, defaulValue);
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -97,7 +102,10 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
             DebugPropertyConfig config,
             Consumer<Integer> setter
     ){
-        create(Integer.class, Codec.INT, ByteBufCodecs.INT, IntegerArgumentType.integer(), name, config, setter, 0);
+        String propertyString = System.getProperty("MC_DEBUG_" + name);
+        int defaulValue = propertyString == null ? 0 : Integer.parseInt(propertyString);
+
+        create(Integer.class, Codec.INT, ByteBufCodecs.INT, IntegerArgumentType.integer(), name, config, setter, defaulValue);
     }
 
     private static final DebugPropertyConfig CLIENT = new DebugPropertyConfig.Builder().build();

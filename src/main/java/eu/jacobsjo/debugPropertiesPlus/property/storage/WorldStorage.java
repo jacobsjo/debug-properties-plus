@@ -55,4 +55,7 @@ public class WorldStorage extends SavedData implements DebugPropertyStorage {
         this.setDirty();
     }
 
+    public void updateLocalDebugProperties() {
+        this.valueMap.updateDebugPropertiesFromMap();
+    }
 }
