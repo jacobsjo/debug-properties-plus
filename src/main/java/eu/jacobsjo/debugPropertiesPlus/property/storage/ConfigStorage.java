@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import eu.jacobsjo.debugPropertiesPlus.DebugPropertiesPlus;
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
 import net.minecraft.util.GsonHelper;
 import org.jspecify.annotations.Nullable;
@@ -41,10 +42,10 @@ public class ConfigStorage implements DebugPropertyStorage{
                 DebugPropertyValueMap valueMap = VALUE_MAP_CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
                 INSTANCE = new ConfigStorage(valueMap, file);
             } catch (IOException e) {
-                // TODO logging: file reading error
+                DebugPropertiesPlus.LOGGER.info("Could not read config file, starting from stretch: ", e);
                 INSTANCE = new ConfigStorage(file);
             } catch (IllegalStateException e) {
-                // TODO logging: decoding error
+                DebugPropertiesPlus.LOGGER.warn("Could not parse config file, starting from stretch: ", e);
                 INSTANCE = new ConfigStorage(file);
             }
         }
@@ -60,9 +61,9 @@ public class ConfigStorage implements DebugPropertyStorage{
             writer.setIndent("  ");
             GsonHelper.writeValue(writer, json, null);
         } catch (IOException e) {
-            //TODO logging: file writing error
+            DebugPropertiesPlus.LOGGER.error("Could not save config file:", e);
         } catch (IllegalStateException e){
-            // TODO logging: encoding error
+            DebugPropertiesPlus.LOGGER.error("Could not encode config file: ", e);
         }
     }
 
