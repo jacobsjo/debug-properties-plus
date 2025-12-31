@@ -1,21 +1,24 @@
 package eu.jacobsjo.debugPropertiesPlus.client.mixin;
 
 import eu.jacobsjo.debugPropertiesPlus.client.ToggleableCheckbox;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Checkbox.class)
-public class CheckboxMixin implements ToggleableCheckbox {
+public abstract class CheckboxMixin extends AbstractWidget implements ToggleableCheckbox {
     @Shadow
     private boolean selected;
-    @Unique
-    private boolean enabled = true;
+
+    public CheckboxMixin(int i, int j, int k, int l, Component component) {
+        super(i, j, k, l, component);
+    }
 
     @Override
     public void debug_properties_plus$setValue(boolean value) {
@@ -24,12 +27,12 @@ public class CheckboxMixin implements ToggleableCheckbox {
 
     @Override
     public void debug_properties_plus$setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        this.active = enabled;
     }
 
     @Inject(method = "onPress", at = @At("HEAD"), cancellable = true)
     public void onPress(InputWithModifiers inputWithModifiers, CallbackInfo ci){
-        if (!this.enabled){
+        if (!this.active){
             ci.cancel();
         }
     }

@@ -59,6 +59,9 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
     public int compareTo(DebugProperty<?> other){
         if (this.config.perWorld() && !other.config.perWorld()) return 1;
         if (!this.config.perWorld() && other.config.perWorld()) return -1;
+        if (this.config.onDedicatedServer() && !other.config.onDedicatedServer()) return 1;
+        if (!this.config.onDedicatedServer() && other.config.onDedicatedServer()) return -1;
+
         return this.name.compareTo(other.name);
     }
 

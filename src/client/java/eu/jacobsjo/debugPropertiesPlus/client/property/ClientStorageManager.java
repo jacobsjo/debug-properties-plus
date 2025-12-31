@@ -4,10 +4,7 @@ import eu.jacobsjo.debugPropertiesPlus.client.property.storage.RemoteServerStora
 import eu.jacobsjo.debugPropertiesPlus.networking.ClientboundDebugPropertyPayload;
 import eu.jacobsjo.debugPropertiesPlus.networking.DebugPropertyUpdatePayload;
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
-import eu.jacobsjo.debugPropertiesPlus.property.storage.ConfigStorage;
-import eu.jacobsjo.debugPropertiesPlus.property.storage.DebugPropertyStorage;
-import eu.jacobsjo.debugPropertiesPlus.property.storage.WorldStorage;
-import eu.jacobsjo.debugPropertiesPlus.property.storage.NewWorldStorage;
+import eu.jacobsjo.debugPropertiesPlus.property.storage.*;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -16,13 +13,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Objects;
+
 public class ClientStorageManager {
     private static final Minecraft minecraft = Minecraft.getInstance();
     private static @Nullable RemoteServerStorage remoteServerStorage;
 
     private static DebugPropertyStorage getStorage(DebugProperty<?> property){
-        if (property.config.onDedicatedServer() && minecraft.player != null && !minecraft.isLocalServer() && remoteServerStorage != null){
-            return remoteServerStorage;
+        if (property.config.onDedicatedServer() && minecraft.player != null && !minecraft.isLocalServer()){
+            return Objects.requireNonNullElseGet(remoteServerStorage, DefaultStorage::new);
         }
 
         if (property.config.perWorld()) {
@@ -59,7 +58,7 @@ public class ClientStorageManager {
 
         // on lan, send update to everyone else
         MinecraftServer server = minecraft.getSingleplayerServer();
-        if (server != null && !server.isSingleplayer()){
+        if (server != null){
             DebugPropertyUpdatePayload<T> payload = new DebugPropertyUpdatePayload<>(property, value);
 
             PlayerLookup.all(server).stream()
@@ -68,14 +67,21 @@ public class ClientStorageManager {
         }
     }
 
+    public static boolean hasRemoveServerStorage(){
+        return remoteServerStorage != null;
+    }
+
     public static void handlePayload(ClientboundDebugPropertyPayload payload, @SuppressWarnings("unused") ClientConfigurationNetworking.Context context){
         remoteServerStorage = new RemoteServerStorage(payload);
     }
 
     public static <T> void handlePayload(DebugPropertyUpdatePayload<T> payload, @SuppressWarnings("unused") ClientPlayNetworking.Context context){
-        if (remoteServerStorage == null){
-            throw new IllegalStateException("Trying to update update property before setting");
+        if (remoteServerStorage != null) {
+            remoteServerStorage.handlePayload(payload);
         }
-        remoteServerStorage.handlePayload(payload);
+    }
+
+    public static void unsetRemoveServerStorage(){
+        remoteServerStorage = null;
     }
 }

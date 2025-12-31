@@ -29,13 +29,15 @@ public class DebugPropertyScreen extends Screen {
     private static final Component TITLE = Component.translatable("debug-properties-plus.screen.title");
     private static final Component SUBTITLE = Component.translatable("debug-properties-plus.screen.warning").withColor(0xFFFF0000);
     private static final Component PER_WORLD_HEADER = Component.translatable("debug-properties-plus.screen.header.perWorld").withColor(0xFFFFF060).withStyle(ChatFormatting.BOLD);
-    private static final Component PER_WORLD_DEFAULT_HEADER = Component.translatable("debug-properties-plus.screen.header.perWorld.default").withColor(0xFFFFF060).withStyle(ChatFormatting.BOLD);
-    private static final Component GLOBAL_HEADER = Component.translatable("debug-properties-plus.screen.header.global").withColor(0xFFFFF060);
+    private static final Component GLOBAL_HEADER = Component.translatable("debug-properties-plus.screen.header.global").withColor(0xFFFFF060).withStyle(ChatFormatting.BOLD);
+    private static final Component SERVER_HEADER = Component.translatable("debug-properties-plus.screen.header.server").withColor(0xFFFFF060).withStyle(ChatFormatting.BOLD);
     private static final Component WARNING_REQUIRES_OP = Component.translatable("debug-properties-plus.screen.warning.requires-op").withColor(0xFFFFF060);
     private static final Component WARNING_SINGLEPLAYER = Component.translatable("debug-properties-plus.screen.warning.singleplayer").withColor(0xFFFFF060);
     private static final Component DISABLED_LAN = Component.translatable("debug-properties-plus.screen.disabled.lan").withColor(0xFFFF3030);
     private static final Component DISABLED_NO_PERMISSION = Component.translatable("debug-properties-plus.screen.disabled.requires-op").withColor(0xFFFF3030);
+    private static final Component DISABLED_NOT_INSTALLED = Component.translatable("debug-properties-plus.screen.disabled.not-installed").withColor(0xFFFF3030);
     private static final Component SET_ON_SERVER = Component.translatable("debug-properties-plus.screen.info.set-on-server").withColor(0xFF3030FF);
+    private static final Component PER_WORLD_DEFAULT_INFO = Component.translatable("debug-properties-plus.screen.header.perWorld.default").withColor(0xFF3030FF);
     private static final Identifier WARNING_SPRITE = Identifier.fromNamespaceAndPath("debug-properties-plus","warning");
     private static final Identifier DISABLED_SPRITE = Identifier.fromNamespaceAndPath("debug-properties-plus","error");
     private static final Identifier RIGHT_ARROW_SPRITE = Identifier.fromNamespaceAndPath("debug-properties-plus","right_arrow");
@@ -128,26 +130,52 @@ public class DebugPropertyScreen extends Screen {
             return WIDTH;
         }
 
+        private enum Category{
+            CLIENT(GLOBAL_HEADER),
+            SERVER(SERVER_HEADER),
+            PER_WORLD(PER_WORLD_HEADER);
+
+            public final Component text;
+            Category(Component text){
+                this.text = text;
+            }
+        }
+
         public void updateSearch(String string) {
             this.clearEntries();
 
             List<DebugProperty<?>> properties = DebugProperty.PROPERTIES.values().stream().sorted().toList();
-            Boolean perWorld = null;
+            Category category = null;
+            boolean enabled = true;
             for (DebugProperty<?> property : properties)
                 if (DebugPropertyScreen.this.includeProperty(property) && property.name.contains(string.toUpperCase(Locale.ROOT))) {
-                    if (perWorld == null || property.config.perWorld() != perWorld){
-                        this.addEntry(new PropertyHeader(property.config.perWorld()
-                                ? DebugPropertyScreen.this.minecraft.getConnection() != null ? PER_WORLD_HEADER : PER_WORLD_DEFAULT_HEADER
-                                : GLOBAL_HEADER));
-                        perWorld = property.config.perWorld();
+                    PropertyHeader header = null;
+                    if (property.config.perWorld()){
+                        if (category != Category.PER_WORLD) {
+                            header = new PropertyHeader(Category.PER_WORLD);
+                            category = Category.PER_WORLD;
+                        }
+                    } else if (property.config.onDedicatedServer()) {
+                        if (category != Category.SERVER) {
+                            header = new PropertyHeader(Category.SERVER);
+                            category = Category.SERVER;
+                        }
+                    } else if (category == null){
+                        header = new PropertyHeader(Category.CLIENT);
+                        category = Category.CLIENT;
+                    }
+
+                    if (header != null){
+                        this.addEntry(header, header.height);
+                        enabled = header.categoryEnabled;
                     }
 
                     if (property.type == Boolean.class) {
                         //noinspection unchecked
-                        this.addEntry(new BooleanPropertyEntry((DebugProperty<Boolean>) property));
+                        this.addEntry(new BooleanPropertyEntry((DebugProperty<Boolean>) property, enabled));
                     } else if (property.type == Integer.class) {
                         //noinspection unchecked
-                        this.addEntry(new IntegerPropertyEntry((DebugProperty<Integer>) property));
+                        this.addEntry(new IntegerPropertyEntry((DebugProperty<Integer>) property, enabled));
                     }
                 }
 
@@ -172,9 +200,54 @@ public class DebugPropertyScreen extends Screen {
 
     private class PropertyHeader extends AbstractPropertyEntry {
 
-        private final Component text;
-        public PropertyHeader(Component text){
-            this.text = text;
+        private final PropertyList.Category category;
+
+        public final boolean categoryEnabled;
+        private @Nullable LinearLayout warningLayout = null;
+        public final int height;
+
+        public PropertyHeader(PropertyList.Category category){
+            this.category = category;
+            boolean categoryEnabled = true;
+
+            Identifier infoSprite = null;
+            Component infoText = null;
+
+            if (minecraft.player != null) {
+                ServerData serverData = minecraft.player.connection.getServerData();
+
+                if (!minecraft.isLocalServer() && (category == PropertyList.Category.SERVER || category == PropertyList.Category.PER_WORLD)) {
+                    if (!ClientStorageManager.hasRemoveServerStorage()) {
+                        categoryEnabled = false;
+                        infoSprite = DISABLED_SPRITE;
+                        infoText = DISABLED_NOT_INSTALLED;
+                    } else if (serverData != null && serverData.isLan() && category == PropertyList.Category.SERVER) {
+                        categoryEnabled = false;
+                        infoSprite = DISABLED_SPRITE;
+                        infoText = DISABLED_LAN;
+                    } else if (!minecraft.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
+                        categoryEnabled = false;
+                        infoSprite = DISABLED_SPRITE;
+                        infoText = DISABLED_NO_PERMISSION;
+                    } else {
+                        infoSprite = RIGHT_ARROW_SPRITE;
+                        infoText = SET_ON_SERVER;
+                    }
+                }
+            } else if (!DebugPropertyScreen.this.worldCreation && category == PropertyList.Category.PER_WORLD){
+                infoSprite = RIGHT_ARROW_SPRITE;
+                infoText = PER_WORLD_DEFAULT_INFO;
+            }
+
+            if (infoSprite != null){
+                warningLayout = LinearLayout.horizontal();
+                warningLayout.addChild(ImageWidget.sprite(16, 16, infoSprite));
+                warningLayout.addChild(new StringWidget(infoText, DebugPropertyScreen.this.minecraft.font), warningLayout.newCellSettings().alignVerticallyMiddle() );
+            }
+
+
+            this.categoryEnabled = categoryEnabled;
+            this.height = warningLayout != null ? 32 : 20;
         }
 
         @Override
@@ -184,7 +257,17 @@ public class DebugPropertyScreen extends Screen {
 
         @Override
         public void renderContent(GuiGraphics guiGraphics, int i, int j, boolean bl, float f) {
-            guiGraphics.drawString(DebugPropertyScreen.this.minecraft.font, text, this.getContentX(), this.getContentY() + 5, -1);
+            guiGraphics.drawString(DebugPropertyScreen.this.minecraft.font, category.text, this.getContentX(), this.getContentY() + 5, -1);
+
+            if (warningLayout != null){
+                int x = this.getContentX();
+                int y = this.getContentY();
+
+                warningLayout.setX(x);
+                warningLayout.setY(y + 16);
+                warningLayout.arrangeElements();
+                warningLayout.visitWidgets(w->w.render(guiGraphics, i, j, f));
+            }
         }
 
         @Override
@@ -199,55 +282,34 @@ public class DebugPropertyScreen extends Screen {
         protected final List<AbstractWidget> children = Lists.newArrayList();
         private final LinearLayout nameLayout;
 
-        protected boolean enabled = true;
-
-        public PropertyEntry(final DebugProperty<T> property) {
+        protected boolean enabled;
+        public PropertyEntry(final DebugProperty<T> property, boolean enabled) {
             this.property = property;
+            this.enabled = enabled;
+
+            Component name = Component.literal(this.property.name);
+            if (!enabled){
+                name = name.copy().withStyle(ChatFormatting.STRIKETHROUGH, ChatFormatting.GRAY);
+            }
 
             nameLayout = LinearLayout.horizontal();
             nameLayout.addChild(new SpacerElement(0, 16));
-            nameLayout.addChild(new StringWidget(Component.literal(this.property.name), DebugPropertyScreen.this.minecraft.font), nameLayout.newCellSettings().alignVerticallyMiddle() );
-
-            Identifier infoSprite = null;
-            Component infoText = null;
-
-            Minecraft minecraft = DebugPropertyScreen.this.minecraft;
+            nameLayout.addChild(new StringWidget(name, DebugPropertyScreen.this.minecraft.font), nameLayout.newCellSettings().alignVerticallyMiddle() );
 
             if (minecraft.player != null) {
-                ServerData serverData = minecraft.player.connection.getServerData();
-
+                Component infoText = null;
                 if (property.config.requiresOp() && !minecraft.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
-                    infoSprite = WARNING_SPRITE;
                     infoText = WARNING_REQUIRES_OP;
                 } else if (property.config.notOnMultiplayer() && !minecraft.isLocalServer()){
-                    infoSprite = WARNING_SPRITE;
                     infoText = WARNING_SINGLEPLAYER;
                 }
 
-                if (!minecraft.isLocalServer() && property.config.onDedicatedServer()){
-
-                    if (serverData != null && serverData.isLan() && !property.config.perWorld()){
-                        enabled = false;
-                        infoSprite = DISABLED_SPRITE;
-                        infoText = DISABLED_LAN;
-                    } else if (!minecraft.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)){
-                        enabled = false;
-                        infoSprite = DISABLED_SPRITE;
-                        infoText = DISABLED_NO_PERMISSION;
-                    } else if (!property.config.perWorld()){
-                        infoSprite = RIGHT_ARROW_SPRITE;
-                        infoText = SET_ON_SERVER;
-                    }
+                if (infoText != null){
+                    nameLayout.addChild(ImageWidget.sprite(16, 16, WARNING_SPRITE));
+                    nameLayout.addChild(new StringWidget(infoText, DebugPropertyScreen.this.minecraft.font), nameLayout.newCellSettings().alignVerticallyMiddle() );
                 }
             }
 
-            if (infoSprite != null) {
-                nameLayout.addChild(ImageWidget.sprite(16, 16, infoSprite));
-            }
-
-            if (infoText != null){
-                nameLayout.addChild(new StringWidget(infoText, DebugPropertyScreen.this.minecraft.font), nameLayout.newCellSettings().alignVerticallyMiddle() );
-            }
             nameLayout.visitWidgets(this.children::add);
         }
 
@@ -276,8 +338,8 @@ public class DebugPropertyScreen extends Screen {
     private class BooleanPropertyEntry extends PropertyEntry<Boolean> {
         private final Checkbox checkbox;
 
-        public BooleanPropertyEntry(DebugProperty<Boolean> propertyKey) {
-            super(propertyKey);
+        public BooleanPropertyEntry(DebugProperty<Boolean> propertyKey, boolean enabled) {
+            super(propertyKey, enabled);
 
             Component message = Component.literal("");
 
@@ -311,8 +373,8 @@ public class DebugPropertyScreen extends Screen {
     private class IntegerPropertyEntry extends PropertyEntry<Integer> {
         private final EditBox editbox;
 
-        public IntegerPropertyEntry(DebugProperty<Integer> property) {
-            super(property);
+        public IntegerPropertyEntry(DebugProperty<Integer> property, boolean enabled) {
+            super(property, enabled);
 
             this.editbox = new EditBox(DebugPropertyScreen.super.font, 40, 16, Component.literal(property.name));
             this.editbox.setValue(ClientStorageManager.get(property).toString());

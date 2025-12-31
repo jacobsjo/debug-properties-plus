@@ -6,6 +6,7 @@ import eu.jacobsjo.debugPropertiesPlus.networking.DebugPropertyUpdatePayload;
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
 import eu.jacobsjo.debugPropertiesPlus.property.ServerStorageManager;
 import eu.jacobsjo.debugPropertiesPlus.property.storage.ConfigStorage;
+import eu.jacobsjo.debugPropertiesPlus.property.storage.NewWorldStorage;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
@@ -14,6 +15,8 @@ import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.SharedConstants;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.dimension.LevelStem;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +32,11 @@ public class DebugPropertiesPlus implements ModInitializer {
         DebugProperty.bootstrap();
         ConfigStorage.getInstance().updateLocalDebugProperties();
 
-        ServerWorldEvents.LOAD.register((server, level) -> {
-            serverStorage = new ServerStorageManager(server);
+        ServerWorldEvents.LOAD.register(Identifier.fromNamespaceAndPath("debug-properties-plus", "client"), (server, level) -> {
+            if (level.dimension().identifier().equals(LevelStem.OVERWORLD.identifier())) {
+                NewWorldStorage.onWorldLoad(server);
+                serverStorage = new ServerStorageManager(server);
+            }
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> DebugPropertyCommand.register(dispatcher, environment));

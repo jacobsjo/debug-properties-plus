@@ -18,8 +18,6 @@ public class NewWorldStorage {
         if (newWorldStorage != null) {
             WorldStorage.setStorage(server, newWorldStorage);
             newWorldStorage = null;
-        } else {
-            WorldStorage.getStorage(server);
         }
     }
 
