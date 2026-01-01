@@ -1,8 +1,10 @@
 Debug Properties Plus
 =====================
 
+**Debug properties exist for debugging purposes only. They might corrupt your world! Only use this mod if you know what you are doing.**
+
 This is a Minecraft fabric mod that adds a convenient UI to modify [debug properties](https://minecraft.wiki/w/Debug_property)
-at runtime. The UI can be opened using F3+F7 (can be changed in controls). This also allows changing debug properties
+at runtime. The UI can be opened using F3+F7 (can be changed in controls) and using Mod Menu. This also allows changing debug properties
 of the server when the mod is also installed on the server and the player has OP permissions.
 
 Additionally, adds a `/debugproperties` command to set properties on the server, even when the mod is not installed on
