@@ -13,7 +13,7 @@ public class WorldStorage extends SavedData implements DebugPropertyStorage {
     private static final Codec<WorldStorage> CODEC = DebugPropertyValueMap.codec(p -> p.config.perWorld())
             .xmap(WorldStorage::new, WorldStorage::valueMap);
 
-    @SuppressWarnings("DataFlowIssue") // passing null as data fixer is save because of a fabric api mixin
+    @SuppressWarnings("DataFlowIssue") // passing null as data fixer is safe because of a fabric api mixin
     private static final SavedDataType<WorldStorage> TYPE = new SavedDataType<>(
             "debug-properties-plus", WorldStorage::new, CODEC, null
     );

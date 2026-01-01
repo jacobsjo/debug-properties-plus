@@ -39,7 +39,7 @@ public class ConfigStorage implements DebugPropertyStorage{
             File file = new File("debug-properties-plus.json");
             try (FileReader fileReader = new FileReader(file)) {
                 JsonElement json = JsonParser.parseReader(fileReader);
-                DebugPropertyValueMap valueMap = VALUE_MAP_CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
+                DebugPropertyValueMap valueMap = VALUE_MAP_CODEC.parse(JsonOps.INSTANCE, json).getPartialOrThrow();
                 INSTANCE = new ConfigStorage(valueMap, file);
             } catch (IOException e) {
                 DebugPropertiesPlus.LOGGER.info("Could not read config file, starting from stretch: ", e);

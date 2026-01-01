@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import eu.jacobsjo.debugPropertiesPlus.DebugPropertiesPlus;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.SharedConstants;
@@ -68,7 +69,15 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
     public static final Map<String, DebugProperty<?>> PROPERTIES = new HashMap<>();
 
 
-    public static final Codec<DebugProperty<?>> BY_NAME_CODEC = Codec.STRING.xmap(PROPERTIES::get, DebugProperty::name);
+    public static final Codec<DebugProperty<?>> BY_NAME_CODEC = Codec.STRING.flatXmap(s -> {
+        DebugProperty<?> property = PROPERTIES.get(s);
+        if (property != null){
+            return DataResult.success(property);
+        } else {
+            return DataResult.error(() -> "Debug property " + s + " not found");
+        }
+    }, p -> DataResult.success(p.name()));
+
     public static final StreamCodec<ByteBuf, DebugProperty<?>> BY_NAME_STREAM_CODEC = ByteBufCodecs.stringUtf8(64).map(PROPERTIES::get, DebugProperty::name);
 
     private String name() {
