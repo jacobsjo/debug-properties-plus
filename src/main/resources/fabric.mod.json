@@ -3,11 +3,22 @@
   "id": "debug-properties-plus",
   "version": "${version}",
   "name": "Debug Properties Plus",
-  "description": "",
-  "authors": [],
-  "contact": {},
-  "license": "All-Rights-Reserved",
-  "icon": "assets/debug-properties-plus/icon.png",
+  "description": "A convenient UI and command to modify debug properties at runtime.",
+  "authors": [
+    {
+      "name": "jacobsjo",
+      "contact": {
+        "homepage": "https://jacobsjo.eu"
+      }
+    }
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/project/debug-properties-plus",
+    "issues": "https://github.com/jacobsjo/debug-properties-plus/issues",
+    "sources": "https://github.com/jacobsjo/debug-properties-plus"
+  },
+  "license": "MIT",
+  "icon": "assets/debug-properties-plus/logo.png",
   "environment": "*",
   "entrypoints": {
     "client": [
@@ -15,6 +26,9 @@
     ],
     "main": [
       "eu.jacobsjo.debugPropertiesPlus.DebugPropertiesPlus"
+    ],
+    "modmenu": [
+      "eu.jacobsjo.debugPropertiesPlus.client.DebugPropertiesPlusModMenu"
     ]
   },
   "mixins": [
@@ -29,5 +43,13 @@
     "fabricloader": ">=0.18.3",
     "fabric-api": "*",
     "minecraft": "1.21.11"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.kofi": "https://ko-fi.com/jacobsjo",
+        "modmenu.github_sponsors": "https://github.com/sponsors/jacobsjo"
+      }
+    }
   }
 }
