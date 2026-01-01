@@ -10,7 +10,6 @@ import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.permissions.Permissions;
 
 public class ServerStorageManager {
     private final MinecraftServer server;
@@ -68,7 +67,7 @@ public class ServerStorageManager {
             context.responseSender().disconnect(Component.literal("Illagal payload: Trying to set non-per-world property on LAN server"));
             return;
         }
-        if (!context.player().permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)){
+        if (!context.player().hasPermissions(2)){
             DebugPropertiesPlus.LOGGER.warn("Received debug properties update from non-op player {}; ignoring.", context.player().nameAndId());
             context.responseSender().disconnect(Component.literal("Illagal payload: Trying to set property with insufficient permissions."));
             return;

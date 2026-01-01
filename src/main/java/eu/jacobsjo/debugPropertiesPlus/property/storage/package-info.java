@@ -1,4 +1,4 @@
-@NullMarked
+@NotNullByDefault
 package eu.jacobsjo.debugPropertiesPlus.property.storage;
 
-import org.jspecify.annotations.NullMarked;
+import org.jetbrains.annotations.NotNullByDefault;

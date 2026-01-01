@@ -120,6 +120,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
     private static final DebugPropertyConfig CLIENT = new DebugPropertyConfig.Builder().build();
     private static final DebugPropertyConfig SINGLEPLAYER = new DebugPropertyConfig.Builder().notOnMultipleyer().build();
     private static final DebugPropertyConfig RENDERER = new DebugPropertyConfig.Builder().updateDebugRenderer().requiresOp().build();
+    private static final DebugPropertyConfig LOCAL_RENDERER = new DebugPropertyConfig.Builder().updateDebugRenderer().build();
     private static final DebugPropertyConfig SERVER = new DebugPropertyConfig.Builder().onDedicatedServer().build();
     private static final DebugPropertyConfig PER_WORLD = new DebugPropertyConfig.Builder().perWorld().onDedicatedServer().build();
     private static final DebugPropertyConfig SERVER_REQUIRES_RELOAD = new DebugPropertyConfig.Builder().onDedicatedServer().requiresReload().build();
@@ -174,7 +175,6 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
         createBoolean("CHASE_COMMAND", SERVER_REQUIRES_RELOAD,  v -> SharedConstants.DEBUG_CHASE_COMMAND = v);
         createBoolean("VERBOSE_COMMAND_ERRORS", SERVER,  v -> SharedConstants.DEBUG_VERBOSE_COMMAND_ERRORS = v);
         createBoolean("DEV_COMMANDS", SERVER_REQUIRES_RELOAD,  v -> SharedConstants.DEBUG_DEV_COMMANDS = v);
-        createBoolean("ACTIVE_TEXT_AREAS", CLIENT, v -> SharedConstants.DEBUG_ACTIVE_TEXT_AREAS = v);
         createBoolean("IGNORE_LOCAL_MOB_CAP", PER_WORLD,  v -> SharedConstants.DEBUG_IGNORE_LOCAL_MOB_CAP = v);
         createBoolean("DISABLE_LIQUID_SPREADING", PER_WORLD,  v -> SharedConstants.DEBUG_DISABLE_LIQUID_SPREADING = v);
         createBoolean("AQUIFERS", PER_WORLD,  v -> SharedConstants.DEBUG_AQUIFERS = v);
@@ -198,5 +198,15 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
         createBoolean("WORLD_RECREATE", CLIENT, v -> SharedConstants.DEBUG_WORLD_RECREATE = v);
         createBoolean("SHOW_SERVER_DEBUG_VALUES", SINGLEPLAYER,  v -> SharedConstants.DEBUG_SHOW_SERVER_DEBUG_VALUES = v);
         createBoolean("FEATURE_COUNT", SERVER,  v -> SharedConstants.DEBUG_FEATURE_COUNT = v);
+
+        createBoolean("WATER", LOCAL_RENDERER,  v -> SharedConstants.DEBUG_WATER = v);
+        createBoolean("HEIGHTMAP", LOCAL_RENDERER,  v -> SharedConstants.DEBUG_HEIGHTMAP = v);
+        createBoolean("COLLISION", LOCAL_RENDERER,  v -> SharedConstants.DEBUG_COLLISION = v);
+        createBoolean("SUPPORT_BLOCKS", LOCAL_RENDERER,  v -> SharedConstants.DEBUG_SUPPORT_BLOCKS = v);
+        createBoolean("LIGHT", LOCAL_RENDERER,  v -> SharedConstants.DEBUG_LIGHT = v);
+        createBoolean("SKY_LIGHT_SECTIONS", LOCAL_RENDERER,  v -> SharedConstants.DEBUG_SKY_LIGHT_SECTIONS = v);
+        createBoolean("SOLID_FACE", LOCAL_RENDERER,  v -> SharedConstants.DEBUG_SOLID_FACE = v);
+        createBoolean("CHUNKS", LOCAL_RENDERER,  v -> SharedConstants.DEBUG_CHUNKS = v);
+
     }
 }

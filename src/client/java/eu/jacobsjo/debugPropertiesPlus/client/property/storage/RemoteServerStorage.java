@@ -7,7 +7,6 @@ import eu.jacobsjo.debugPropertiesPlus.property.storage.DebugPropertyStorage;
 import eu.jacobsjo.debugPropertiesPlus.property.storage.DebugPropertyValueMap;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.permissions.Permissions;
 
 public class RemoteServerStorage implements DebugPropertyStorage {
     private final DebugPropertyValueMap valueMap;
@@ -24,7 +23,7 @@ public class RemoteServerStorage implements DebugPropertyStorage {
     @Override
     public <T> void set(DebugProperty<T> property, T value) {
         // This is clientside validation; duplicated on the server
-        if (Minecraft.getInstance().player == null || !Minecraft.getInstance().player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
+        if (Minecraft.getInstance().player == null || !Minecraft.getInstance().player.hasPermissions(2)) {
             throw new IllegalStateException("Trying to set remote property without sufficient permissions");
         }
 

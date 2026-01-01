@@ -11,7 +11,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.KeyMapping;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 public class DebugPropertiesPlusClient implements ClientModInitializer {
@@ -23,7 +23,7 @@ public class DebugPropertiesPlusClient implements ClientModInitializer {
                 "eu.jacobsjo.debugPropertiesPlus.key.openScreen",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_F7,
-                KeyMapping.Category.DEBUG
+                KeyMapping.Category.MISC
         ));
 
         ClientLoginConnectionEvents.DISCONNECT.register((listener, minecraft) -> ClientStorageManager.unsetRemoveServerStorage());

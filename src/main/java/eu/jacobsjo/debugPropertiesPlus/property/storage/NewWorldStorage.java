@@ -1,7 +1,7 @@
 package eu.jacobsjo.debugPropertiesPlus.property.storage;
 
 import net.minecraft.server.MinecraftServer;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class NewWorldStorage {
     private static @Nullable WorldStorage newWorldStorage;

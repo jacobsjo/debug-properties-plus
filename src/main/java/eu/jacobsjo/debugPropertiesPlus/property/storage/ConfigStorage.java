@@ -8,7 +8,7 @@ import com.mojang.serialization.JsonOps;
 import eu.jacobsjo.debugPropertiesPlus.DebugPropertiesPlus;
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
 import net.minecraft.util.GsonHelper;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileReader;

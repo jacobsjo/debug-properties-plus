@@ -49,7 +49,6 @@ mutable field net/minecraft/SharedConstants DEBUG_PANORAMA_SCREENSHOT Z
 mutable field net/minecraft/SharedConstants DEBUG_CHASE_COMMAND Z
 mutable field net/minecraft/SharedConstants DEBUG_VERBOSE_COMMAND_ERRORS Z
 mutable field net/minecraft/SharedConstants DEBUG_DEV_COMMANDS Z
-mutable field net/minecraft/SharedConstants DEBUG_ACTIVE_TEXT_AREAS Z
 mutable field net/minecraft/SharedConstants DEBUG_IGNORE_LOCAL_MOB_CAP Z
 mutable field net/minecraft/SharedConstants DEBUG_DISABLE_LIQUID_SPREADING Z
 mutable field net/minecraft/SharedConstants DEBUG_AQUIFERS Z
@@ -73,3 +72,12 @@ mutable field net/minecraft/SharedConstants DEBUG_FAKE_JITTER_MS I
 mutable field net/minecraft/SharedConstants DEBUG_WORLD_RECREATE Z
 mutable field net/minecraft/SharedConstants DEBUG_SHOW_SERVER_DEBUG_VALUES Z
 mutable field net/minecraft/SharedConstants DEBUG_FEATURE_COUNT Z
+
+mutable field net/minecraft/SharedConstants DEBUG_WATER Z
+mutable field net/minecraft/SharedConstants DEBUG_HEIGHTMAP Z
+mutable field net/minecraft/SharedConstants DEBUG_COLLISION Z
+mutable field net/minecraft/SharedConstants DEBUG_SUPPORT_BLOCKS Z
+mutable field net/minecraft/SharedConstants DEBUG_LIGHT Z
+mutable field net/minecraft/SharedConstants DEBUG_SKY_LIGHT_SECTIONS Z
+mutable field net/minecraft/SharedConstants DEBUG_SOLID_FACE Z
+mutable field net/minecraft/SharedConstants DEBUG_CHUNKS Z

@@ -40,9 +40,9 @@
   ],
   "accessWidener": "debug-properties-plus.classtweaker",
   "depends": {
-    "fabricloader": ">=0.18.3",
+    "fabricloader": "*",
     "fabric-api": "*",
-    "minecraft": "1.21.11"
+    "minecraft": "1.21.10"
   },
   "custom": {
     "modmenu": {

@@ -5,14 +5,14 @@ import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Used to send an updated debug properties to the client. The aim is here *not* to _set_ those properties on the client
  * but to _show_ them in the settings screen. Also used for the client to send update requests to the server.
  */
 public record DebugPropertyUpdatePayload<T>(DebugProperty<T> property, T newValue) implements CustomPacketPayload {
-    public static final Identifier DEBUG_PROPERTY_UPDATE_PAYLOAD_ID = Identifier.fromNamespaceAndPath(DebugPropertiesPlus.MOD_ID, "debug_property_update");
+    public static final ResourceLocation DEBUG_PROPERTY_UPDATE_PAYLOAD_ID = ResourceLocation.fromNamespaceAndPath(DebugPropertiesPlus.MOD_ID, "debug_property_update");
     public static final Type<DebugPropertyUpdatePayload<?>> ID = new Type<>(DEBUG_PROPERTY_UPDATE_PAYLOAD_ID);
     public static final StreamCodec<FriendlyByteBuf, DebugPropertyUpdatePayload<?>> STREAM_CODEC = new StreamCodec<>() {
         @Override

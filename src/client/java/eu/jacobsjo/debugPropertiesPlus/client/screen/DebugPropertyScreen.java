@@ -18,9 +18,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
-import net.minecraft.server.permissions.Permissions;
-import org.jspecify.annotations.Nullable;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Locale;
@@ -38,16 +37,16 @@ public class DebugPropertyScreen extends Screen {
     private static final Component DISABLED_NOT_INSTALLED = Component.translatable("debug-properties-plus.screen.disabled.not-installed").withColor(0xFFFF3030);
     private static final Component SET_ON_SERVER = Component.translatable("debug-properties-plus.screen.info.set-on-server").withColor(0xFF3030FF);
     private static final Component PER_WORLD_DEFAULT_INFO = Component.translatable("debug-properties-plus.screen.header.perWorld.default").withColor(0xFF3030FF);
-    private static final Identifier WARNING_SPRITE = Identifier.fromNamespaceAndPath("debug-properties-plus","warning");
-    private static final Identifier DISABLED_SPRITE = Identifier.fromNamespaceAndPath("debug-properties-plus","error");
-    private static final Identifier RIGHT_ARROW_SPRITE = Identifier.fromNamespaceAndPath("debug-properties-plus","right_arrow");
+    private static final ResourceLocation WARNING_SPRITE = ResourceLocation.fromNamespaceAndPath("debug-properties-plus","warning");
+    private static final ResourceLocation DISABLED_SPRITE = ResourceLocation.fromNamespaceAndPath("debug-properties-plus","error");
+    private static final ResourceLocation RIGHT_ARROW_SPRITE = ResourceLocation.fromNamespaceAndPath("debug-properties-plus","right_arrow");
 
     private static final Component SEARCH = Component.translatable("debug.options.search").withStyle(EditBox.SEARCH_HINT_STYLE);
 
     private static final int WIDTH = 400;
 
     final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 61, 33);
-    private DebugPropertyScreen.@Nullable PropertyList propertyList;
+    private @Nullable DebugPropertyScreen.PropertyList propertyList;
     private @Nullable EditBox searchBox;
 
     private final boolean worldCreation;
@@ -210,7 +209,7 @@ public class DebugPropertyScreen extends Screen {
             this.category = category;
             boolean categoryEnabled = true;
 
-            Identifier infoSprite = null;
+            ResourceLocation infoSprite = null;
             Component infoText = null;
 
             if (minecraft.player != null) {
@@ -225,7 +224,7 @@ public class DebugPropertyScreen extends Screen {
                         categoryEnabled = false;
                         infoSprite = DISABLED_SPRITE;
                         infoText = DISABLED_LAN;
-                    } else if (!minecraft.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
+                    } else if (!minecraft.player.hasPermissions(2)) {
                         categoryEnabled = false;
                         infoSprite = DISABLED_SPRITE;
                         infoText = DISABLED_NO_PERMISSION;
@@ -298,7 +297,7 @@ public class DebugPropertyScreen extends Screen {
 
             if (minecraft.player != null) {
                 Component infoText = null;
-                if (property.config.requiresOp() && !minecraft.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
+                if (property.config.requiresOp() && !minecraft.player.hasPermissions(2)) {
                     infoText = WARNING_REQUIRES_OP;
                 } else if (property.config.notOnMultiplayer() && !minecraft.isLocalServer()){
                     infoText = WARNING_SINGLEPLAYER;
