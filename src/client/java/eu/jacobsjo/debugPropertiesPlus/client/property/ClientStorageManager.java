@@ -42,9 +42,11 @@ public class ClientStorageManager {
 
     public static <T> void set(DebugProperty<T> property, T value) {
         DebugPropertyStorage storage = getStorage(property);
-        if (storage.get(property) != value) {
-            storage.set(property, value);
+        if (storage.get(property).equals(value)) {
+            return;
         }
+
+        storage.set(property, value);
 
         // if not setting on a remove server, update local property
         if (storage != remoteServerStorage){
