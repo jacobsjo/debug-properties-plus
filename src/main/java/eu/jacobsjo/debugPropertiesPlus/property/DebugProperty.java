@@ -88,13 +88,19 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
         PROPERTIES.put(name, new DebugProperty<>(type, valueCodec, valueStreamCodec, argument, name, config, setter, defaultValue));
     }
 
+    private final static boolean ENABLED;
+    static {
+        String enabled_property = System.getProperty("MC_DEBUG_ENABLED");
+        ENABLED = enabled_property != null &&  (enabled_property.isEmpty() || Boolean.parseBoolean(enabled_property));
+    }
+
     private static void createBoolean(
             String name,
             DebugPropertyConfig config,
             Consumer<Boolean> setter
     ){
         String propertyString = System.getProperty("MC_DEBUG_" + name);
-        boolean defaulValue = propertyString != null && (propertyString.isEmpty() || Boolean.parseBoolean(propertyString));
+        boolean defaulValue = ENABLED && propertyString != null && (propertyString.isEmpty() || Boolean.parseBoolean(propertyString));
 
         create(Boolean.class, Codec.BOOL, ByteBufCodecs.BOOL, BoolArgumentType.bool(), name, config, setter, defaulValue);
     }
@@ -106,7 +112,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
             Consumer<Integer> setter
     ){
         String propertyString = System.getProperty("MC_DEBUG_" + name);
-        int defaulValue = propertyString == null ? 0 : Integer.parseInt(propertyString);
+        int defaulValue = (!ENABLED || propertyString == null) ? 0 : Integer.parseInt(propertyString);
 
         create(Integer.class, Codec.INT, ByteBufCodecs.INT, IntegerArgumentType.integer(), name, config, setter, defaulValue);
     }
