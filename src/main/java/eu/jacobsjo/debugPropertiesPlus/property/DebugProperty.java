@@ -50,7 +50,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
         if (!this.type.isInstance(value)){
             throw new IllegalArgumentException("Trying to set value of wrong type");
         }
-        DebugPropertiesPlus.LOGGER.info("Set debug property {} to {}", this.name, value);
+        DebugPropertiesPlus.LOGGER.debug("Set debug property {} to {}", this.name, value);
         //noinspection unchecked
         this.setter.accept((T) value);
     }
