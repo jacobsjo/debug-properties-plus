@@ -5,7 +5,7 @@ import eu.jacobsjo.debugPropertiesPlus.client.property.ClientStorageManager;
 import eu.jacobsjo.debugPropertiesPlus.networking.ClientboundDebugPropertyPayload;
 import eu.jacobsjo.debugPropertiesPlus.networking.DebugPropertyUpdatePayload;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -19,7 +19,7 @@ public class DebugPropertiesPlusClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        screenOpenKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+        screenOpenKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "eu.jacobsjo.debugPropertiesPlus.key.openScreen",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_F7,

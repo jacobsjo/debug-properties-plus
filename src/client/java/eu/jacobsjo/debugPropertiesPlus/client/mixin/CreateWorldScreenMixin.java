@@ -5,6 +5,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldCallback;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.levelgen.presets.WorldPreset;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,7 +19,7 @@ import java.util.OptionalLong;
 public class CreateWorldScreenMixin {
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private static void init(Minecraft minecraft, Runnable runnable, WorldCreationContext worldCreationContext, Optional optional, OptionalLong optionalLong, CreateWorldCallback createWorldCallback, CallbackInfo ci){
+    private static void init(Minecraft minecraft, Runnable onClose, WorldCreationContext settings, Optional<ResourceKey<WorldPreset>> preset, OptionalLong seed, CreateWorldCallback createWorldCallback, CallbackInfo ci){
         NewWorldStorage.startCreateNewWorld();
     }
 

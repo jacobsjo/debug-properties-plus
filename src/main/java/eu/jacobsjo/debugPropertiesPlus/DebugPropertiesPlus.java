@@ -9,7 +9,7 @@ import eu.jacobsjo.debugPropertiesPlus.property.storage.ConfigStorage;
 import eu.jacobsjo.debugPropertiesPlus.property.storage.NewWorldStorage;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLevelEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
@@ -32,7 +32,7 @@ public class DebugPropertiesPlus implements ModInitializer {
         DebugProperty.bootstrap();
         ConfigStorage.getInstance().updateLocalDebugProperties();
 
-        ServerWorldEvents.LOAD.register(Identifier.fromNamespaceAndPath("debug-properties-plus", "client"), (server, level) -> {
+        ServerLevelEvents.LOAD.register(Identifier.fromNamespaceAndPath("debug-properties-plus", "client"), (server, level) -> {
             if (level.dimension().identifier().equals(LevelStem.OVERWORLD.identifier())) {
                 NewWorldStorage.onWorldLoad(server);
                 serverStorage = new ServerStorageManager(server);
@@ -41,9 +41,9 @@ public class DebugPropertiesPlus implements ModInitializer {
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> DebugPropertyCommand.register(dispatcher, environment));
 
-        PayloadTypeRegistry.configurationS2C().register(ClientboundDebugPropertyPayload.ID, ClientboundDebugPropertyPayload.STREAM_CODEC);
-        PayloadTypeRegistry.playS2C().register(DebugPropertyUpdatePayload.ID, DebugPropertyUpdatePayload.STREAM_CODEC);
-        PayloadTypeRegistry.playC2S().register(DebugPropertyUpdatePayload.ID, DebugPropertyUpdatePayload.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundConfiguration().register(ClientboundDebugPropertyPayload.ID, ClientboundDebugPropertyPayload.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(DebugPropertyUpdatePayload.ID, DebugPropertyUpdatePayload.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(DebugPropertyUpdatePayload.ID, DebugPropertyUpdatePayload.STREAM_CODEC);
 
         ServerConfigurationConnectionEvents.CONFIGURE.register((listener, server) -> {
             if (listener.getOwner() == server.getSingleplayerProfile()) return;

@@ -20,8 +20,7 @@ public class CreateWorldScreenMoreTabMixin {
     @Unique private static final Component DEBUG_PROPERTIES_LABEL = Component.translatable("debug-properties-plus.button.open-screen");
     @Unique private static final Minecraft minecraft = Minecraft.getInstance();
 
-    // Synthtic field of outer class
-    @Shadow @Final CreateWorldScreen field_42178;
+    @Shadow @Final CreateWorldScreen this$0;
 
     @Inject(method = "<init>", at=@At("TAIL"))
     public void init(CreateWorldScreen createWorldScreen, CallbackInfo ci, @Local GridLayout.RowHelper rowHelper){
@@ -31,7 +30,7 @@ public class CreateWorldScreenMoreTabMixin {
                     button -> minecraft.setScreen(
                             new DebugPropertyScreen(
                                     true,
-                                    () -> minecraft.setScreen(field_42178)
+                                    () -> minecraft.setScreen(this$0)
                             )
                     )
             ).width(210).build()

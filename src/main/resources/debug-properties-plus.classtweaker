@@ -1,4 +1,4 @@
-classTweaker v1 named
+classTweaker v1 official
 mutable field net/minecraft/SharedConstants DEBUG_ENABLED Z
 mutable field net/minecraft/SharedConstants DEBUG_OPEN_INCOMPATIBLE_WORLDS Z
 mutable field net/minecraft/SharedConstants DEBUG_ALLOW_LOW_SIM_DISTANCE Z

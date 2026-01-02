@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(SelectWorldScreen.class)
 public class SelectWorldScreenMixin {
 
-    @Inject(method = "method_73448", at=@At("HEAD"))
+    @Inject(method = "lambda$createDebugWorldRecreateButton$0", at=@At("HEAD"))
     public void createDebugWorldRecreateButtonPress(Button button, CallbackInfo ci){
         NewWorldStorage.startCreateNewWorld();
     }
