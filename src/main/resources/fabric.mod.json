@@ -38,7 +38,7 @@
   "accessWidener": "debug-properties-plus.classtweaker",
   "depends": {
     "fabricloader": ">=0.18.3",
-    "fabric-api": ">=0.140.3",
+    "fabric-api": "*",
     "minecraft": "~26.1-"
   },
   "custom": {

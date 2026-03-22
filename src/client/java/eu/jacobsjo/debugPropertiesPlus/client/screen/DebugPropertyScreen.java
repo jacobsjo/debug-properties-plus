@@ -6,7 +6,7 @@ import eu.jacobsjo.debugPropertiesPlus.client.property.ClientStorageManager;
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
@@ -256,8 +256,8 @@ public class DebugPropertyScreen extends Screen {
         }
 
         @Override
-        public void renderContent(GuiGraphics guiGraphics, int i, int j, boolean bl, float f) {
-            guiGraphics.drawString(DebugPropertyScreen.this.minecraft.font, category.text, this.getContentX(), this.getContentY() + 5, -1);
+        public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
+            graphics.text(DebugPropertyScreen.this.minecraft.font, category.text, this.getContentX(), this.getContentY() + 5, -1);
 
             if (warningLayout != null){
                 int x = this.getContentX();
@@ -266,7 +266,7 @@ public class DebugPropertyScreen extends Screen {
                 warningLayout.setX(x);
                 warningLayout.setY(y + 16);
                 warningLayout.arrangeElements();
-                warningLayout.visitWidgets(w->w.render(guiGraphics, i, j, f));
+                warningLayout.visitWidgets(w->w.extractRenderState(graphics, mouseX, mouseY, a));
             }
         }
 
@@ -324,14 +324,14 @@ public class DebugPropertyScreen extends Screen {
         }
 
         @Override
-        public void renderContent(GuiGraphics guiGraphics, int i, int j, boolean bl, float f) {
+        public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
             int x = this.getContentX();
             int y = this.getContentY();
 
             this.nameLayout.setX(x);
             this.nameLayout.setY(y);
             this.nameLayout.arrangeElements();
-            this.nameLayout.visitWidgets(w->w.render(guiGraphics, i, j, f));
+            this.nameLayout.visitWidgets(w->w.extractRenderState(graphics, mouseX, mouseY, a));
         }
     }
 
@@ -356,12 +356,12 @@ public class DebugPropertyScreen extends Screen {
         }
 
         @Override
-        public void renderContent(GuiGraphics guiGraphics, int i, int j, boolean bl, float f) {
-            super.renderContent(guiGraphics, i, j, bl, f);
+        public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
+            super.extractContent(graphics, mouseX, mouseY, hovered, a);
 
             this.checkbox.setX(this.getContentX() + this.getContentWidth() - this.checkbox.getWidth());
             this.checkbox.setY(this.getContentY());
-            this.checkbox.render(guiGraphics, i, j, f);
+            this.checkbox.extractRenderState(graphics, mouseX, mouseY, a);
         }
 
         public void refreshEntry() {
@@ -394,12 +394,12 @@ public class DebugPropertyScreen extends Screen {
         }
 
         @Override
-        public void renderContent(GuiGraphics guiGraphics, int i, int j, boolean bl, float f) {
-            super.renderContent(guiGraphics, i, j, bl, f);
+        public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
+            super.extractContent(graphics, mouseX, mouseY, hovered, a);
 
             this.editbox.setX(this.getContentX() + this.getContentWidth() - this.editbox.getWidth());
             this.editbox.setY(this.getContentY());
-            this.editbox.render(guiGraphics, i, j, f);
+            this.editbox.extractRenderState(graphics, mouseX, mouseY, a);
         }
 
         public void refreshEntry() {

@@ -1,7 +1,9 @@
 package eu.jacobsjo.debugPropertiesPlus.property.storage;
 
 import com.mojang.serialization.Codec;
+import eu.jacobsjo.debugPropertiesPlus.DebugPropertiesPlus;
 import eu.jacobsjo.debugPropertiesPlus.property.DebugProperty;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -15,7 +17,7 @@ public class WorldStorage extends SavedData implements DebugPropertyStorage {
 
     @SuppressWarnings("DataFlowIssue") // passing null as data fixer is safe because of a fabric api mixin
     private static final SavedDataType<WorldStorage> TYPE = new SavedDataType<>(
-            "debug-properties-plus", WorldStorage::new, CODEC, null
+            Identifier.fromNamespaceAndPath(DebugPropertiesPlus.MOD_ID, "debug-properties"), WorldStorage::new, CODEC, null
     );
 
     public static WorldStorage getStorage(MinecraftServer server){

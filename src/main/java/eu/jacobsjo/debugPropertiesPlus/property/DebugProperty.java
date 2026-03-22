@@ -149,7 +149,6 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
         createBoolean("STRUCTURES", RENDERER,  v -> SharedConstants.DEBUG_STRUCTURES = v);
         createBoolean("GAME_EVENT_LISTENERS", RENDERER,  v -> SharedConstants.DEBUG_GAME_EVENT_LISTENERS = v);
         createBoolean("DUMP_TEXTURE_ATLAS", CLIENT, v -> SharedConstants.DEBUG_DUMP_TEXTURE_ATLAS = v);
-        createBoolean("DUMP_INTERPOLATED_TEXTURE_FRAMES", CLIENT, v -> SharedConstants.DEBUG_DUMP_INTERPOLATED_TEXTURE_FRAMES = v);
         createBoolean("STRUCTURE_EDIT_MODE", SERVER,  v -> SharedConstants.DEBUG_STRUCTURE_EDIT_MODE = v);
         createBoolean("SAVE_STRUCTURES_AS_SNBT", SERVER,  v -> SharedConstants.DEBUG_SAVE_STRUCTURES_AS_SNBT = v);
         createBoolean("SYNCHRONOUS_GL_LOGS", CLIENT, v -> SharedConstants.DEBUG_SYNCHRONOUS_GL_LOGS = v);
@@ -171,6 +170,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
         createBoolean("SCULK_CATALYST", PER_WORLD,  v -> SharedConstants.DEBUG_SCULK_CATALYST = v);
         createBoolean("BYPASS_REALMS_VERSION_CHECK", CLIENT, v -> SharedConstants.DEBUG_BYPASS_REALMS_VERSION_CHECK = v);
         createBoolean("SOCIAL_INTERACTIONS", CLIENT, v -> SharedConstants.DEBUG_SOCIAL_INTERACTIONS = v);
+        createBoolean("CHAT_DISABLED", CLIENT, v -> SharedConstants.DEBUG_CHAT_DISABLED = v);
         createBoolean("VALIDATE_RESOURCE_PATH_CASE", SERVER,  v -> SharedConstants.DEBUG_VALIDATE_RESOURCE_PATH_CASE = v);
         createBoolean("UNLOCK_ALL_TRADES", PER_WORLD,  v -> SharedConstants.DEBUG_UNLOCK_ALL_TRADES = v);
         createBoolean("BREEZE_MOB", RENDERER,  v -> SharedConstants.DEBUG_BREEZE_MOB = v);
@@ -184,6 +184,7 @@ public class DebugProperty<T> implements Comparable<DebugProperty<?>> {
         createBoolean("VERBOSE_COMMAND_ERRORS", SERVER,  v -> SharedConstants.DEBUG_VERBOSE_COMMAND_ERRORS = v);
         createBoolean("DEV_COMMANDS", SERVER_REQUIRES_RELOAD,  v -> SharedConstants.DEBUG_DEV_COMMANDS = v);
         createBoolean("ACTIVE_TEXT_AREAS", CLIENT, v -> SharedConstants.DEBUG_ACTIVE_TEXT_AREAS = v);
+        createBoolean("PREFER_WAYLAND", CLIENT, v -> SharedConstants.DEBUG_PREFER_WAYLAND = v);
         createBoolean("IGNORE_LOCAL_MOB_CAP", PER_WORLD,  v -> SharedConstants.DEBUG_IGNORE_LOCAL_MOB_CAP = v);
         createBoolean("DISABLE_LIQUID_SPREADING", PER_WORLD,  v -> SharedConstants.DEBUG_DISABLE_LIQUID_SPREADING = v);
         createBoolean("AQUIFERS", PER_WORLD,  v -> SharedConstants.DEBUG_AQUIFERS = v);
