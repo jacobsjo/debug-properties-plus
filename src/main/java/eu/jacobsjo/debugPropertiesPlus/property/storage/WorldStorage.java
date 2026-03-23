@@ -21,11 +21,11 @@ public class WorldStorage extends SavedData implements DebugPropertyStorage {
     );
 
     public static WorldStorage getStorage(MinecraftServer server){
-        return Objects.requireNonNull(server.getLevel(Level.OVERWORLD)).getDataStorage().computeIfAbsent(TYPE);
+        return server.getDataStorage().computeIfAbsent(TYPE);
     }
 
     public static void setStorage(MinecraftServer server, WorldStorage storage){
-        Objects.requireNonNull(server.getLevel(Level.OVERWORLD)).getDataStorage().set(TYPE, storage);
+        server.getDataStorage().set(TYPE, storage);
     }
 
     private final DebugPropertyValueMap valueMap;
